@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h> 
+#include <sys/wait.h>
 
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
@@ -29,6 +31,7 @@ int normal_mode(char *input) {
     input[strcspn(input, "\n")] = '\0';
 
     if (strncmp(input, "echo ", 5) == 0) {
+        strcpy(last_command, input);
         printf("%s\n", input + 5);
         return 1;
     } else if (strcmp(input, "!!") == 0) {
@@ -39,6 +42,7 @@ int normal_mode(char *input) {
         strcpy(input, last_command);
         return normal_mode(input);
     } else if (strncmp(input, "exit", 4) == 0) {
+        strcpy(last_command, input);
         int code = 0;
         if (strlen(input) > 5) {
             code = atoi(input + 5) % 256; 
@@ -53,7 +57,26 @@ int normal_mode(char *input) {
             printf("bye\n");
             exit(code);
         }
-    } 
+    } else {
+        char *args[MAX_LINE];
+        strcpy(last_command, input);
+
+        parse_input(input, args);
+
+        int pid = fork();
+        if (pid == 0) {
+            execvp(args[0], args);
+            perror("Invalid command");
+            exit(EXIT_FAILURE);
+        } else if (pid < 0) {
+            perror ("Fork failed");
+            return 0;
+        } else {
+            int status;
+            waitpid(pid, &status, 0);
+            return 1;
+        }
+    }
     return 0; 
 }
 
@@ -70,9 +93,8 @@ int script_mode(char *input) {
             }
 
             line[strcspn(line, "\n")] = '\0'; 
-
+            
             if (normal_mode(line)) {
-                strcpy(last_command, line);
                 continue;
             }
 
@@ -99,7 +121,6 @@ int loop(char *input) {
         }
 
         if (normal_mode(input)) {
-            strcpy(last_command, input);
             continue;
         } 
 
@@ -113,7 +134,10 @@ int loop(char *input) {
 int main(int argc, char *argv[]) {
     char input[MAX_LINE];
     if (argc > 1) {
-        script_mode(argv[1]);
+        struct stat file_stat;
+        if (stat(argv[1], &file_stat) == 0 && S_ISREG(file_stat.st_mode)) {
+            script_mode(argv[1]);
+        }
     } else {
         loop(input);
     }

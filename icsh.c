@@ -8,9 +8,20 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MAX_LINE 1024
+#define MAX_LINE 1024   
+#define MAX_ARGS 64
 
 char last_command[MAX_LINE] = "";
+
+
+void parse_input(char *input, char **args) {
+    int i = 0;
+    args[i] = strtok(input, " \t\n");
+    while (args[i] != NULL && i < MAX_ARGS - 1) {
+        args[++i] = strtok(NULL, " \t\n");
+    }
+    args[i] = NULL;
+}
 
 
 int normal_mode(char *input) {

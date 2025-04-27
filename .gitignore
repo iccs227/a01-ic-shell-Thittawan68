@@ -1,2 +1,4 @@
 *.dSYM/
 icsh
+.vscode/
+script.sh

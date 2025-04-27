@@ -10,103 +10,13 @@
 #include <sys/stat.h> 
 #include <sys/wait.h>
 
+#include "icsh.h"
+
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
 
-char last_command[MAX_LINE] = "";
 
-
-void parse_input(char *input, char **args) {
-    int i = 0;
-    args[i] = strtok(input, " \t\n");
-    while (args[i] != NULL && i < MAX_ARGS - 1) {
-        args[++i] = strtok(NULL, " \t\n");
-    }
-    args[i] = NULL;
-}
-
-
-int normal_mode(char *input) {
-    
-    input[strcspn(input, "\n")] = '\0';
-
-    if (strncmp(input, "echo ", 5) == 0) {
-        strcpy(last_command, input);
-        printf("%s\n", input + 5);
-        return 1;
-    } else if (strcmp(input, "!!") == 0) {
-        if (strlen(last_command) == 0) {
-            return 1; 
-        }
-        printf("%s\n", last_command);
-        strcpy(input, last_command);
-        return normal_mode(input);
-    } else if (strncmp(input, "exit", 4) == 0) {
-        strcpy(last_command, input);
-        int code = 0;
-        if (strlen(input) > 5) {
-            code = atoi(input + 5) % 256; 
-        } else {
-            fprintf(stderr, "exit: %s: please provide exit code\n", input + 5);
-            return 1;
-        }
-        if (code < 0 || code > 255) {
-            fprintf(stderr, "exit: %s: wrong code\n", input + 5);
-            return 1;
-        } else {
-            printf("bye\n");
-            exit(code);
-        }
-    } else {
-        char *args[MAX_LINE];
-        strcpy(last_command, input);
-
-        parse_input(input, args);
-
-        int pid = fork();
-        if (pid == 0) {
-            execvp(args[0], args);
-            perror("Invalid command");
-            exit(EXIT_FAILURE);
-        } else if (pid < 0) {
-            perror ("Fork failed");
-            return 0;
-        } else {
-            int status;
-            waitpid(pid, &status, 0);
-            return 1;
-        }
-    }
-    return 0; 
-}
-
-int script_mode(char *input) {
-    FILE *script_file = fopen(input, "r");
-        if (script_file == NULL) {
-            fprintf(stderr, "Error opening script file: %s\n", input);
-            return 0;
-        }
-        char line[MAX_LINE];
-        while (fgets(line, sizeof(line), script_file)) {
-            if (line[0] == '\n' || strncmp(line, "##", 2) == 0 || strncmp(line, "//", 2) == 0) {
-                continue; 
-            }
-
-            line[strcspn(line, "\n")] = '\0'; 
-            
-            if (normal_mode(line)) {
-                continue;
-            }
-
-            printf("bad command\n");
-            strcpy(last_command, line);
-        }
-        fclose(script_file);
-
-    return 0;
-}
-
-int loop(char *input) {
+int normal_loop(char *input) {
 
     while (1) {
         printf("icsh $ ");
@@ -123,9 +33,6 @@ int loop(char *input) {
         if (normal_mode(input)) {
             continue;
         } 
-
-        printf("bad command\n");
-        strcpy(last_command, input);
     }
 
     return 0;
@@ -139,7 +46,7 @@ int main(int argc, char *argv[]) {
             script_mode(argv[1]);
         }
     } else {
-        loop(input);
+        normal_loop(input);
     }
     
 }

@@ -4,8 +4,8 @@ BINARY=icsh
 
 all: icsh 
 
-icsh: icsh.c parse_input.c built_in.c mode.c process.c
-	$(CC) -o $(BINARY) $(CFLAGS) icsh.c parse_input.c built_in.c mode.c process.c
+icsh: icsh.c parse_input.c built_in.c mode.c process.c signal_handler.c
+	$(CC) -o $(BINARY) $(CFLAGS) icsh.c parse_input.c built_in.c mode.c process.c signal_handler.c
 
 .PHONY: clean
 

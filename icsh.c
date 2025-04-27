@@ -40,6 +40,8 @@ int normal_loop(char *input) {
 
 int main(int argc, char *argv[]) {
     char input[MAX_LINE];
+    signal(SIGINT, handle_sigint);
+    signal(SIGTSTP, handle_sigtstp);
     if (argc > 1) {
         struct stat file_stat;
         if (stat(argv[1], &file_stat) == 0 && S_ISREG(file_stat.st_mode)) {

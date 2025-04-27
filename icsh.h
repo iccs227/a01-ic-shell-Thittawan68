@@ -15,5 +15,6 @@ int echo(char *input);
 int view(char *input);
 int exit_shell(char *input);
 int new_process(char *input);
-
+void handle_sigint();
+void handle_sigtstp();
 #endif

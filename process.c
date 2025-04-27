@@ -28,7 +28,17 @@ int new_process(char *input) {
         return 0;
     } else {
         int status;
-        waitpid(pid, &status, 0);
+        foreground_pid = pid;
+        waitpid(pid, &status, WUNTRACED);
+        foreground_pid = -1;
+        // if (WIFEXITED(status)) {
+        //     exit_code = WEXITSTATUS(status);
+        // } else if (WIFSIGNALED(status)) {
+        //     int signal_number = WTERMSIG(status);
+        //     exit_code = 128 + signal_number; 
+        // } else if (WIFSTOPPED(status)) {
+        //     exit_code = WSTOPSIG(status);
+        // }
         return 1;
     }
 }

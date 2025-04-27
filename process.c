@@ -10,6 +10,7 @@
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
 
+pid_t foreground_pid = -1;
 
 int new_process(char *input) {
     char *args[MAX_LINE];

@@ -31,14 +31,14 @@ int new_process(char *input) {
         foreground_pid = pid;
         waitpid(pid, &status, WUNTRACED);
         foreground_pid = -1;
-        // if (WIFEXITED(status)) {
-        //     exit_code = WEXITSTATUS(status);
-        // } else if (WIFSIGNALED(status)) {
-        //     int signal_number = WTERMSIG(status);
-        //     exit_code = 128 + signal_number; 
-        // } else if (WIFSTOPPED(status)) {
-        //     exit_code = WSTOPSIG(status);
-        // }
+        if (WIFEXITED(status)) {
+            exit_code = WEXITSTATUS(status);
+        } else if (WIFSIGNALED(status)) {
+            int signal_number = WTERMSIG(status);
+            exit_code = 128 + signal_number; 
+        } else if (WIFSTOPPED(status)) {
+            exit_code = WSTOPSIG(status);
+        }
         return 1;
     }
 }

@@ -7,11 +7,11 @@
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
 
-
+int exit_code = 0;
 
 int normal_mode(char *input) {
     input[strcspn(input, "\n")] = '\0';
-    
+    parse_input_with_spaces(input);
     if (strncmp(input, "echo ", 5) == 0) {
         return echo(input);
     } else if (strcmp(input, "!!") == 0) {

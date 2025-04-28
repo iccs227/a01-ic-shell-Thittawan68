@@ -11,6 +11,13 @@
 char last_command[MAX_LINE] = "";
 
 int echo(char *input){
+    
+    if (strcmp(input + 5, "$?") == 0) {
+        printf("%d\n", exit_code);
+        exit_code = 0;
+        strcpy(last_command, input);
+        return 1;
+    }
     strcpy(last_command, input);
     printf("%s\n", input + 5);
     return 1;

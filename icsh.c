@@ -16,13 +16,14 @@
 #define MAX_ARGS 64
 
 
-int normal_loop(char *input) { // Main loop for normal mode - reads input and executes commands
+// Main loop for normal mode - reads input and executes commands
+int normal_loop(char *input) { 
 
     while (1) {
         printf("icsh $ ");
         fflush(stdout);
 
-        if (!fgets(input, MAX_LINE, stdin)) {
+        if (!fgets(input, MAX_LINE, stdin)) { // Read input from stdin
             break;
         }
 
@@ -30,7 +31,7 @@ int normal_loop(char *input) { // Main loop for normal mode - reads input and ex
             continue; 
         }
 
-        if (normal_mode(input)) {
+        if (normal_mode(input)) { 
             continue;
         } 
     }

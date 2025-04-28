@@ -11,7 +11,7 @@ extern pid_t foreground_pid; /// Global variable to store the foreground process
 extern int exit_code; // Global variable to store the exit code of the last command
 
 // parse_input function
-void parse_input(char *input, char **args);
+void parse_input(char *input, char **args, char **input_file, char **output_file);
 void parse_input_with_spaces(char *input);
 
 // mode functions

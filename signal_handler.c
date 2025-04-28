@@ -7,7 +7,7 @@
 
 void handle_sigint() { // Handle Ctrl+C
     if (foreground_pid > 0) {
-        kill(foreground_pid, SIGINT);
+        kill(foreground_pid, SIGINT); // Send SIGINT (terminate) to the foreground process
         printf("\n");
     }
     else {
@@ -19,7 +19,7 @@ void handle_sigint() { // Handle Ctrl+C
 
 void handle_sigtstp() { // Handle Ctrl+Z
     if (foreground_pid > 0) {
-        kill(foreground_pid, SIGTSTP);
+        kill(foreground_pid, SIGTSTP); // Send SIGTSTP (stop) to the foreground process
         printf("\n");
     }
     else {

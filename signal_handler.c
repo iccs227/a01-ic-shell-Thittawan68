@@ -5,26 +5,26 @@
 
 #include "icsh.h"
 
-void handle_sigint() {
+void handle_sigint() { // Handle Ctrl+C
     if (foreground_pid > 0) {
         kill(foreground_pid, SIGINT);
-        printf("\nSIGINT (Ctrl+C).\n");
+        printf("\n");
     }
     else {
         printf("\n");
         printf("icsh $ ");
-        fflush(stdout);
+        fflush(stdout); // if no foreground process, just print a new prompt and flush stdout
     }
 }
 
-void handle_sigtstp() {
+void handle_sigtstp() { // Handle Ctrl+Z
     if (foreground_pid > 0) {
         kill(foreground_pid, SIGTSTP);
-        printf("\nSIGTSTP (Ctrl+Z).\n");
+        printf("\n");
     }
     else {
         printf("\n");
         printf("icsh $ ");
-        fflush(stdout);
+        fflush(stdout); // if no foreground process, just print a new prompt and flush stdout
     }
 }

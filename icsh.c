@@ -16,7 +16,7 @@
 #define MAX_ARGS 64
 
 
-int normal_loop(char *input) {
+int normal_loop(char *input) { // Main loop for normal mode - reads input and executes commands
 
     while (1) {
         printf("icsh $ ");
@@ -40,15 +40,15 @@ int normal_loop(char *input) {
 
 int main(int argc, char *argv[]) {
     char input[MAX_LINE];
-    signal(SIGINT, handle_sigint);
-    signal(SIGTSTP, handle_sigtstp);
+    signal(SIGINT, handle_sigint); // Handle Ctrl+C
+    signal(SIGTSTP, handle_sigtstp); // Handle Ctrl+Z
     if (argc > 1) {
         struct stat file_stat;
-        if (stat(argv[1], &file_stat) == 0 && S_ISREG(file_stat.st_mode)) {
-            script_mode(argv[1]);
+        if (stat(argv[1], &file_stat) == 0 && S_ISREG(file_stat.st_mode)) { // Check if the file exists and is a regular file
+            script_mode(argv[1]); // Run in script mode
         }
     } else {
-        normal_loop(input);
+        normal_loop(input); // Run in normal mode
     }
     
 }

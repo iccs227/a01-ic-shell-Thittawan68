@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <sys/stat.h> 
 #include <sys/wait.h>
 #include <fcntl.h>
@@ -45,14 +46,14 @@ int checking_exit_code(int status) { // Check the exit code of the child process
     return -1; // Unknown status
 }
 
-int new_process(char *input) { // Create a new process to execute the command
+int new_process(char *input, char *last_command) { // Create a new process to execute the command
     char *args[MAX_LINE];
     char *input_file[MAX_LINE];
     char *output_file[MAX_LINE];
 
     strcpy(last_command, input); // Store the last command
 
-    parse_input(input, args, input_file, output_file); // Parse the input string into arguments
+    parse_input(input, args, input_file, output_file); // Parse the input string into arguments  
 
     int pid = fork();
     if (pid == 0) { // Child process
@@ -69,6 +70,30 @@ int new_process(char *input) { // Create a new process to execute the command
         waitpid(pid, &status, WUNTRACED); // Wait for the child process to finish 
         foreground_pid = -1; // Reset the foreground process ID
         exit_code = checking_exit_code(status); // Check the exit code of the child process
+        return 1;
+    }
+}
+
+int background_process(char *input, char *last_command) { // Create a new process to execute the command in the background
+    char *args[MAX_LINE];
+    char *input_file[MAX_LINE];
+    char *output_file[MAX_LINE];
+
+   strcpy(last_command, input); // Store the last command
+
+    parse_input(input, args, input_file, output_file); // Parse the input string into arguments
+
+    int pid = fork();
+    if (pid == 0) { // Child process
+        redirecting(*input_file, *output_file); // Redirect input and output files if needed
+        execvp(args[0], args);
+        perror("Invalid command");
+        exit(EXIT_FAILURE);
+    } else if (pid < 0) { // Fork failed
+        perror ("Fork failed"); 
+        return 0;
+    } else { // Parent process
+        printf("Background process started with PID: %d\n", pid);
         return 1;
     }
 }

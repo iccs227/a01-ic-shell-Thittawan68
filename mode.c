@@ -15,26 +15,39 @@ bool is_redirected(char *input) {
     return (strchr(input, '>') != NULL || strchr(input, '<') != NULL); 
 }
 
+bool is_background_process(char *input) { // Check if the command should run in the background
+    char *ampersand = strchr(input, '&');
+    if (ampersand != NULL) {
+        *ampersand = '\0'; // Remove the '&' character from the input string
+        return 1; // Background process
+    }
+    return 0; // Foreground process
+}
+
 // Reads input and executes commands
-int normal_mode(char *input) { 
+int normal_mode(char *input, char *last_command) { 
     input[strcspn(input, "\n")] = '\0'; // Remove newline character
     parse_input_with_spaces(input); // Remove leading spaces
     if (is_redirected(input)) {
-        return new_process(input);
+        return new_process(input, last_command); // Handle redirection
     }
     if (strncmp(input, "echo ", 5) == 0) {
-        return echo(input);
+        return echo(input, last_command);
     } else if (strncmp(input, "!!", 2) == 0) {
-        return view(input);
+        return view(input, last_command);
     } else if (strncmp(input, "exit", 4) == 0) {
-        return exit_shell(input);
+        return exit_shell(input, last_command);
     } else {
-        return new_process(input); // Not a built-in command
+        if (is_background_process(input)) { // Check if the command should run in the background
+            return background_process(input, last_command);
+        } else {
+            return new_process(input, last_command); // Not a built-in command
+        }
     }
 }
 
 // Reads input from a script file and executes commands
-int script_mode(char *input) { 
+int script_mode(char *input, char *last_command) { 
     FILE *script_file = fopen(input, "r");
         if (script_file == NULL) {
             fprintf(stderr, "Error opening script file: %s\n", input);
@@ -47,8 +60,8 @@ int script_mode(char *input) {
             }
 
             line[strcspn(line, "\n")] = '\0'; 
-            
-            if (normal_mode(line)) {
+
+            if (normal_mode(line, last_command)) {
                 continue;
             }
         }

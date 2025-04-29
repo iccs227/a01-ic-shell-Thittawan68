@@ -8,9 +8,9 @@
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
 
-char last_command[MAX_LINE] = "";
+// char last_command[MAX_LINE] = "";
 
-int echo(char *input){
+int echo(char *input, char *last_command){
     
     if (strcmp(input + 5, "$?") == 0) {
         printf("%d\n", exit_code);
@@ -23,16 +23,19 @@ int echo(char *input){
     return 1;
 }
 
-int view(char *input){
+int view(char *input, char *last_command){
     if (strlen(last_command) == 0) {
         return 1; 
     }
+    if (strlen(input) > 2) { // Check if there is anything after "!!"
+        strcat(last_command, input + 2); // Append the extra part to the last command just like how terminal work
+    }
     printf("%s\n", last_command);
     strcpy(input, last_command);
-    return normal_mode(input);
+    return normal_mode(input, last_command);
 }
 
-int exit_shell(char *input){
+int exit_shell(char *input, char *last_command){
     strcpy(last_command, input);
     int code = 0;
     if (strlen(input) > 5) {

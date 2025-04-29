@@ -17,8 +17,7 @@
 
 
 // Main loop for normal mode - reads input and executes commands
-int normal_loop(char *input) { 
-
+int normal_loop(char *input, char *last_command) { 
     while (1) {
         printf("icsh $ ");
         fflush(stdout);
@@ -31,7 +30,7 @@ int normal_loop(char *input) {
             continue; 
         }
 
-        if (normal_mode(input)) { 
+        if (normal_mode(input, last_command)) { 
             continue;
         } 
     }
@@ -41,15 +40,16 @@ int normal_loop(char *input) {
 
 int main(int argc, char *argv[]) {
     char input[MAX_LINE];
+    char last_command[MAX_LINE] = "";
     signal(SIGINT, handle_sigint); // Handle Ctrl+C
     signal(SIGTSTP, handle_sigtstp); // Handle Ctrl+Z
     if (argc > 1) {
         struct stat file_stat;
         if (stat(argv[1], &file_stat) == 0 && S_ISREG(file_stat.st_mode)) { // Check if the file exists and is a regular file
-            script_mode(argv[1]); // Run in script mode
+            script_mode(argv[1], last_command); // Run in script mode
         }
     } else {
-        normal_loop(input); // Run in normal mode
+        normal_loop(input, last_command); // Run in normal mode
     }
     
 }

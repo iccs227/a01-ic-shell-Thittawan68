@@ -1,6 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#define MAX_ARGS 64
+#include "icsh.h"
  
 void parse_input(char *input, char **args, char **input_file, char **output_file) { // Parse the input string into a bunch of arguments array
     *input_file = NULL;
@@ -20,7 +20,7 @@ void parse_input(char *input, char **args, char **input_file, char **output_file
     
     int i = 0;
     args[i] = strtok(input, " \t\n"); // Get the first argument
-    while (args[i] != NULL && i < MAX_ARGS - 1) { // Get split the rest of the arguments
+    while (args[i] != NULL && i < MAX_LINE - 1) { // Get split the rest of the arguments
         args[++i] = strtok(NULL, " \t\n");
     }
     args[i] = NULL;

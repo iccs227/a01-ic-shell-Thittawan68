@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "icsh.h"
+#include "double_linklist.h"
 
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
@@ -40,6 +41,8 @@ int normal_mode(char *input, char *last_command) {
     } else if (strncmp(input, "jobs", 4) == 0) {
         strcpy(last_command, input);
         return print_jobs();
+    } else if (strncmp(input, "fg", 2) == 0) {
+        return bring_to_foreground(input, last_command); // Bring background job to foreground
     } else {
         if (is_background_process(input)) { // Check if the command should run in the background
             return background_process(input, last_command);

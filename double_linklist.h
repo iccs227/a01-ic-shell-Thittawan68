@@ -20,4 +20,5 @@ void addFirst(int pid, const char *command, const char *status);
 void removeNode(int id);
 void changeStatus(int id, const char *newStatus);
 void printList();
+int bring_to_foreground(char *input, char *last_command);
 #endif

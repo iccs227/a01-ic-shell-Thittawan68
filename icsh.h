@@ -26,8 +26,10 @@ int print_jobs();
 // process functions
 int new_process(char *input, char *last_command);
 int background_process(char *input, char *last_command);
+int checking_exit_code(int status);
 
 // signal handler functions
 void handle_sigint();
 void handle_sigtstp();
+void handle_sigchld(int sig);
 #endif

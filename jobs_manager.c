@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "icsh.h"
+#include <ctype.h> 
+#include <sys/wait.h>
 
 int size = 0;
 int current_background = 0;
@@ -31,6 +34,7 @@ Node* createNode(int pid, const char *command, const char *status) {
     newNode->prev = NULL;
     newNode->next = NULL;
     size++;
+    newNode->id = size; // Assign a unique ID to the node
     return newNode;
 }
 
@@ -126,11 +130,65 @@ void printList() {
         return;
     }
 
-    Node *current = head;
+    Node *current = head->prev;
     do {
         printf("ID: %d, PID: %d, Command: %s, Status: %s\n",
                current->id, current->pid, current->command, current->status);
         current = current->prev;
-    } while (current != head);
+    } while (current != head->prev); // Loop until we reach the head again
 }
 
+
+int bring_to_foreground(char *input, char *last_command) {
+    if (head == NULL) {
+        printf("No background jobs to bring to foreground.\n");
+        return 1;
+    }
+
+    strcpy(last_command, input);
+
+    // Trim leading spaces
+    while (isspace(*input)) {
+        input++;
+    }
+
+    // Check if the command starts with "fg"
+    if (strncmp(input, "fg", 2) != 0) {
+        printf("Invalid command. Usage: fg %%<job_id>\n");
+        return 1;
+    }
+
+    // Move past "fg" and any spaces
+    input += 2;
+    while (isspace(*input)) {
+        input++;
+    }
+
+    // Check if the next character is '%'
+    if (*input != '%') {
+        printf("Invalid input format. Usage: fg %%<job_id>\n");
+        return 1;
+    }
+
+    // Move past '%' and extract the job ID
+    input++;
+    int id = atoi(input); // Convert the job ID to an integer
+
+    // Search for the job in the list
+    Node *current = head;
+    do {
+        if (current->id == id) {
+            int status;
+            foreground_pid = current->pid; // Set the foreground process ID
+            kill(current->pid, SIGCONT); // Send SIGCONT to the process
+            waitpid(current->pid, &status, WUNTRACED); 
+            foreground_pid = -1;
+            exit_code = checking_exit_code(status);
+            return 1;
+        }
+        current = current->next;
+    } while (current != head);
+
+    printf("Job with ID %d not found.\n", id);
+    return 1;
+}

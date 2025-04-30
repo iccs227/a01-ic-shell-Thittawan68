@@ -28,3 +28,10 @@ void handle_sigtstp() { // Handle Ctrl+Z
         fflush(stdout); // if no foreground process, just print a new prompt and flush stdout
     }
 }
+
+void handle_sigchld(int sig) {
+    int status;
+    while (waitpid(-1, &status, WNOHANG) > 0){
+        exit_code = checking_exit_code(status);
+    };
+}

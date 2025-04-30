@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
     char last_command[MAX_LINE] = "";
     signal(SIGINT, handle_sigint); // Handle Ctrl+C
     signal(SIGTSTP, handle_sigtstp); // Handle Ctrl+Z
+    signal(SIGCHLD, handle_sigchld); // Handle child process termination
     if (argc > 1) {
         struct stat file_stat;
         if (stat(argv[1], &file_stat) == 0 && S_ISREG(file_stat.st_mode)) { // Check if the file exists and is a regular file

@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int size = 0;
+int current_background = 0;
+int prev_background = 0;
 
 // Define the structure of Node
 typedef struct Node {
@@ -12,6 +15,8 @@ typedef struct Node {
     struct Node *prev;
     struct Node *next;
 } Node;
+
+Node *head = NULL;
 
 // Function to create a new node with malloc
 Node* createNode(int pid, const char *command, const char *status) {
@@ -30,50 +35,50 @@ Node* createNode(int pid, const char *command, const char *status) {
 }
 
 // Add a node to the beginning of the circular doubly linked list
-void addFirst(Node **head, int pid, const char *command, const char *status) {
+void addFirst(int pid, const char *command, const char *status) {
     Node *newNode = createNode(pid, command, status);
 
-    if (*head == NULL) {
+    if (head == NULL) {
         // If the list is empty, point the new node to itself
         newNode->next = newNode;
         newNode->prev = newNode;
-        *head = newNode;
+        head = newNode;
     } else {
-        Node *tail = (*head)->prev; // Get the last node (tail)
+        Node *tail = (head)->prev; // Get the last node (tail)
 
         // Insert the new node at the beginning
-        newNode->next = *head;
+        newNode->next = head;
         newNode->prev = tail;
-        (*head)->prev = newNode;
+        (head)->prev = newNode;
         tail->next = newNode;
 
-        *head = newNode; // Update the head to the new node
+        head = newNode; // Update the head to the new node
     }
 }
 
 // Remove a node by PID from the circular doubly linked list
-void removeNode(Node **head, int id) {
-    if (*head == NULL) {
+void removeNode(int id) {
+    if (head == NULL) {
         printf("List is empty.\n");
         return;
     }
 
-    Node *current = *head;
+    Node *current = head;
 
     // Traverse the list to find the node with the given PID
     do {
         if (current->id == id) {
             if (current->next == current && current->prev == current) {
                 // If there's only one node in the list
-                *head = NULL;
+                head = NULL;
             } else {
                 // Update the links of the neighboring nodes
                 current->prev->next = current->next;
                 current->next->prev = current->prev;
 
                 // Update the head if the node to be removed is the head
-                if (*head == current) {
-                    *head = current->next;
+                if (head == current) {
+                    head = current->next;
                 }
             }
 
@@ -86,19 +91,19 @@ void removeNode(Node **head, int id) {
             return;
         }
         current = current->next;
-    } while (current != *head);
+    } while (current != head);
 
     printf("Node with ID %d not found.\n", id);
 }
 
 // Change the status of a node by PID
-void changeStatus(Node **head, int id, const char *newStatus) {
-    if (*head == NULL) {
+void changeStatus(int id, const char *newStatus) {
+    if (head == NULL) {
         printf("List is empty.\n");
         return;
     }
 
-    Node *current = *head;
+    Node *current = head;
 
     // Traverse the list to find the node with the given PID
     do {
@@ -109,13 +114,13 @@ void changeStatus(Node **head, int id, const char *newStatus) {
             return;
         }
         current = current->next;
-    } while (current != *head);
+    } while (current != head);
 
     printf("Node with ID %d not found.\n", id);
 }
 
 // Print the circular doubly linked list
-void printList(Node *head) {
+void printList() {
     if (head == NULL) {
         printf("List is empty.\n");
         return;
@@ -128,3 +133,4 @@ void printList(Node *head) {
         current = current->prev;
     } while (current != head);
 }
+

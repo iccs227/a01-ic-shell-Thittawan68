@@ -21,6 +21,7 @@ int script_mode(char *input, char *last_command);
 int echo(char *input, char *last_command);
 int view(char *input, char *last_command);
 int exit_shell(char *input, char *last_command);
+int print_jobs();
 
 // process functions
 int new_process(char *input, char *last_command);

@@ -37,6 +37,9 @@ int normal_mode(char *input, char *last_command) {
         return view(input, last_command);
     } else if (strncmp(input, "exit", 4) == 0) {
         return exit_shell(input, last_command);
+    } else if (strncmp(input, "jobs", 4) == 0) {
+        strcpy(last_command, input);
+        return print_jobs();
     } else {
         if (is_background_process(input)) { // Check if the command should run in the background
             return background_process(input, last_command);

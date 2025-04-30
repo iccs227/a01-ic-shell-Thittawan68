@@ -4,6 +4,7 @@
 
 
 #include "icsh.h"
+#include "double_linklist.h"
 
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
@@ -51,4 +52,9 @@ int exit_shell(char *input, char *last_command){
         printf("bye\n");
         exit(code);
     }
+}
+
+int print_jobs(){
+    printList();
+    return 1;
 }

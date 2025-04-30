@@ -8,6 +8,7 @@
 #include <fcntl.h>
 
 #include "icsh.h"
+#include "double_linklist.h"
 
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
@@ -86,13 +87,16 @@ int background_process(char *input, char *last_command) { // Create a new proces
     int pid = fork();
     if (pid == 0) { // Child process
         redirecting(*input_file, *output_file); // Redirect input and output files if needed
+        setpgid(0, 0); // Set the process group ID to the child process ID
         execvp(args[0], args);
         perror("Invalid command");
         exit(EXIT_FAILURE);
-    } else if (pid < 0) { // Fork failed
+    } else if (pid < 0) { // Fork failed        
         perror ("Fork failed"); 
         return 0;
     } else { // Parent process
+        setpgid(pid, pid); // Set the process group ID to the child process ID
+        addFirst(pid, last_command, "Running"); // Add the background process to the linked list
         printf("Background process started with PID: %d\n", pid);
         return 1;
     }

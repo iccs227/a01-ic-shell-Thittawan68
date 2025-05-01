@@ -154,7 +154,7 @@ int bring_to_foreground(char *input) {
 
     // Check if the command starts with "fg"
     if (strncmp(input, "fg", 2) != 0) {
-        printf("Invalid command. Usage: fg %%<job_id>\n");
+        printf("Invalid command. Usage\n");
         return 1;
     }
 
@@ -166,7 +166,7 @@ int bring_to_foreground(char *input) {
 
     // Check if the next character is '%'
     if (*input != '%') {
-        printf("Invalid input format. Usage: fg %%<job_id>\n");
+        printf("Invalid input format. \n");
         return 1;
     }
 
@@ -189,6 +189,51 @@ int bring_to_foreground(char *input) {
         current = current->next;
     } while (current != head);
 
-    printf("Job with ID %d not found.\n", id);
     return 1;
+}
+
+int add_or_update_job(int pid, char *command, char *status) {
+    if (head == NULL) {
+        return addFirst(pid, command, status);
+    }
+
+    Node *current = head;
+    do {
+        if (current->pid == pid) {
+            free(current->command);
+            free(current->status);
+            char* new_command = malloc(strlen(command) + 1);
+            strcpy(new_command, command);
+            current->command = strdup(new_command);
+            current->status = strdup(status);
+            return current->id;
+        }
+        current = current->next;
+    } while (current != head);
+
+    return addFirst(pid, command, status);
+}
+
+char* get_command_by_pid(int pid) {
+    if (head == NULL) {
+        return NULL; 
+    }
+
+    Node *current = head;
+
+    // Traverse the list to find the node with the given PID
+    do {
+        if (current->pid == pid) {
+            char* command = malloc(strlen(current->command) + 1);
+            strcpy(command, current->command);
+            return command; 
+        }
+        current = current->next;
+    } while (current != head);
+
+    return NULL; // Return NULL if the node is not found
+}
+
+int get_size() {
+    return size;
 }

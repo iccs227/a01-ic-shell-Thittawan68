@@ -80,8 +80,11 @@ int background_process(char *input) { // Create a new process to execute the com
     char *input_file[MAX_LINE];
     char *output_file[MAX_LINE];
 
-   strcpy(last_command, input); // Store the last command
 
+    char *original_command = strcpy(malloc(strlen(input) + 2), input); 
+    original_command[strlen(original_command)] = '&';
+    original_command[strlen(original_command) + 1] = '\0'; // Append '&' to the command
+    strcpy(last_command, original_command); // Store the last command
     parse_input(input, args, input_file, output_file); // Parse the input string into arguments
 
     int pid = fork();
@@ -95,9 +98,9 @@ int background_process(char *input) { // Create a new process to execute the com
         perror ("Fork failed"); 
         return 0;
     } else { // Parent process
-        setpgid(pid, pid); // Set the process group ID to the child process ID
+        setpgid(pid, pid); // Set the process group ID to the child process ID         
         int id = addFirst(pid, last_command, "Running"); // Add the background process to the linked list
-        printf("[%d] %d\n", id, pid); // Print the job ID and process ID
+        printf("[%d] %d\n", id, pid); // Print the job ID and process ID 
         return 1;
     }
 }

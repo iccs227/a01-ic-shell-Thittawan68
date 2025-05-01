@@ -9,9 +9,9 @@
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
 
-// char last_command[MAX_LINE] = "";
+char last_command[MAX_LINE] = "";
 
-int echo(char *input, char *last_command){
+int echo(char *input){
     
     if (strcmp(input + 5, "$?") == 0) {
         printf("%d\n", exit_code);
@@ -24,19 +24,34 @@ int echo(char *input, char *last_command){
     return 1;
 }
 
-int view(char *input, char *last_command){
+int view(char *input) {
     if (strlen(last_command) == 0) {
-        return 1; 
+        return 1;
     }
-    if (strlen(input) > 2) { // Check if there is anything after "!!"
-        strcat(last_command, input + 2); // Append the extra part to the last command just like how terminal work
+
+    char result[MAX_LINE] = ""; // Buffer to store the final string
+    char *pos = strstr(input, "!!"); // Find the position of "!!"
+
+    if (pos != NULL) {
+        // Copy the part before "!!"
+        strncat(result, input, pos - input);
+
+        // Append the last command
+        strcat(result, last_command);
+
+        // Append the part after "!!"
+        strcat(result, pos + 2);
+    } else {
+        // If "!!" is not found, just copy the input as is
+        strcpy(result, input);
     }
-    printf("%s\n", last_command);
-    strcpy(input, last_command);
-    return normal_mode(input, last_command);
+
+    printf("%s\n", result); // Print the final result
+    strcpy(input, result);  // Update the input with the final result
+    return normal_mode(input); // Pass the updated input to normal_mode
 }
 
-int exit_shell(char *input, char *last_command){
+int exit_shell(char *input){
     strcpy(last_command, input);
     int code = 0;
     if (strlen(input) > 5) {

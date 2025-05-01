@@ -47,7 +47,7 @@ int checking_exit_code(int status) { // Check the exit code of the child process
     return -1; // Unknown status
 }
 
-int new_process(char *input, char *last_command) { // Create a new process to execute the command
+int new_process(char *input) { // Create a new process to execute the command
     char *args[MAX_LINE];
     char *input_file[MAX_LINE];
     char *output_file[MAX_LINE];
@@ -75,7 +75,7 @@ int new_process(char *input, char *last_command) { // Create a new process to ex
     }
 }
 
-int background_process(char *input, char *last_command) { // Create a new process to execute the command in the background
+int background_process(char *input) { // Create a new process to execute the command in the background
     char *args[MAX_LINE];
     char *input_file[MAX_LINE];
     char *output_file[MAX_LINE];
@@ -96,8 +96,8 @@ int background_process(char *input, char *last_command) { // Create a new proces
         return 0;
     } else { // Parent process
         setpgid(pid, pid); // Set the process group ID to the child process ID
-        addFirst(pid, last_command, "Running"); // Add the background process to the linked list
-        printf("Background process started with PID: %d\n", pid);
+        int id = addFirst(pid, last_command, "Running"); // Add the background process to the linked list
+        printf("[%d] %d\n", id, pid); // Print the job ID and process ID
         return 1;
     }
 }

@@ -39,7 +39,7 @@ Node* createNode(int pid, const char *command, const char *status) {
 }
 
 // Add a node to the beginning of the circular doubly linked list
-void addFirst(int pid, const char *command, const char *status) {
+int addFirst(int pid, const char *command, const char *status) {
     Node *newNode = createNode(pid, command, status);
 
     if (head == NULL) {
@@ -58,6 +58,7 @@ void addFirst(int pid, const char *command, const char *status) {
 
         head = newNode; // Update the head to the new node
     }
+    return newNode->id; // Return the ID of the new node
 }
 
 // Remove a node by PID from the circular doubly linked list
@@ -90,7 +91,6 @@ void removeNode(int id) {
             free(current->command);
             free(current->status);
             free(current);
-            size--;
             printf("Node with ID %d removed.\n", id);
             return;
         }
@@ -139,7 +139,7 @@ void printList() {
 }
 
 
-int bring_to_foreground(char *input, char *last_command) {
+int bring_to_foreground(char *input) {
     if (head == NULL) {
         printf("No background jobs to bring to foreground.\n");
         return 1;

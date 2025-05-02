@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 
 #include "icsh.h"
+#include "double_linklist.h"
 
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
@@ -27,10 +28,16 @@ int normal_loop(char *input) {
         }
 
         if (input[0] == '\n') {
+            if (job_is_done()) {
+                print_done_jobs(); 
+            }
             continue; 
         }
-
+        
         if (normal_mode(input)) { 
+            if (job_is_done()) {
+                print_done_jobs(); 
+            }
             continue;
         } 
     }

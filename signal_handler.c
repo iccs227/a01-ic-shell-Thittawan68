@@ -10,11 +10,11 @@
 void handle_sigint() { // Handle Ctrl+C
     if (foreground_pid > 0) {
         kill(foreground_pid, SIGINT); // Send SIGINT (terminate) to the foreground process
-        write(STDOUT_FILENO, "\n", 1); // Print a newline
+        write(STDOUT_FILENO, "\n", 1); 
     }
     else {
-        write(STDOUT_FILENO, "\n", 1); // Print a newline
-        write(STDOUT_FILENO, "icsh $ ", 7); // Print the prompt
+        write(STDOUT_FILENO, "\n", 1); 
+        write(STDOUT_FILENO, "icsh $ ", 7); 
         fflush(stdout); // if no foreground process, just print a new prompt and flush stdout
     }
 }
@@ -42,17 +42,20 @@ void handle_sigtstp() { // Handle Ctrl+Z
             len = snprintf(buffer, sizeof(buffer), "\n[%d]+ Stopped     %s", id, command); // Format the output
         }
         write(STDOUT_FILENO, buffer, len); // Print the job status
-        write(STDOUT_FILENO, "\n ", 1); // Print the prompt
+        write(STDOUT_FILENO, "\n ", 1); 
     } else {
-        write(STDOUT_FILENO, "\n", 1); // Print a newline
-        write(STDOUT_FILENO, "icsh $ ", 7); // Print the prompt
+        write(STDOUT_FILENO, "\n", 1); 
+        write(STDOUT_FILENO, "icsh $ ", 7); 
         fflush(stdout); // If no foreground process, just print a new prompt and flush stdout
     }
 }
 
-void handle_sigchld(int sig) {
+void handle_sigchld() {
     int status;
-    while (waitpid(-1, &status, WNOHANG) > 0){
+    int pid;
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0){
+        update_to_be_printed(); // tell the program their something to print next time
+        update_jobs_status(pid, "Done"); // Update the job status to "Done"
         exit_code = checking_exit_code(status);
     };
 }

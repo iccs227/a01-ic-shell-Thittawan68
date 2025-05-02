@@ -31,5 +31,5 @@ int checking_exit_code(int status);
 // signal handler functions
 void handle_sigint();
 void handle_sigtstp();
-void handle_sigchld(int sig);
+void handle_sigchld();
 #endif

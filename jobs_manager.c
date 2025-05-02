@@ -54,7 +54,7 @@ int addFirst(int pid, const char *command, const char *status) {
     return newNode->id; 
 }
 
-void removeNode(int id) {
+void removeNode_by_id(int id) {
     if (head->next == head) { // Check if the list is empty (only sentinel exists)
         printf("List is empty.\n");
         return;
@@ -74,12 +74,36 @@ void removeNode(int id) {
             free(current);
 
             to_be_printed = 1;
-            size--;
             return;
         }
         current = current->next;
     }
-    printf("Node with ID %d not found.\n", id);
+}
+
+void removeNode_by_pid(int pid) {
+    if (head->next == head) { // Check if the list is empty (only sentinel exists)
+        printf("List is empty.\n");
+        return;
+    }
+
+    Node *current = head->next; // Start from the first real node
+
+    while (current != head) { // Stop when we reach the sentinel
+        if (current->pid == pid) {
+            // Update the links of the neighboring nodes
+            current->prev->next = current->next;
+            current->next->prev = current->prev;
+
+            // Free the memory for the node
+            free(current->command);
+            free(current->status);
+            free(current);
+
+            to_be_printed = 1;
+            return;
+        }
+        current = current->next;
+    }
 }
 
 // Change the status of a node by PID
@@ -107,7 +131,6 @@ void changeStatus(int id, const char *newStatus) {
 
 void printList() {
     if (head->next == head) { // Check if the list is empty (only sentinel exists)
-        printf("List is empty.\n");
         return;
     }
 
@@ -118,7 +141,7 @@ void printList() {
         if (strcmp(current->status, "Done") == 0) {
             int idToRemove = current->id;
             current = current->prev; // Move to the next node before removing
-            removeNode(idToRemove);
+            removeNode_by_id(idToRemove);
         } else {
             current = current->prev;
         }
@@ -157,8 +180,13 @@ int bring_to_foreground(char *input) {
         return 1;
     }
 
-    // Move past '%' and extract the job ID
+        // Move past '%' and extract the job ID
     input++;
+    if (!isdigit(*input)) { // Check if the input is not a digit
+        printf("fg: %%%s: no such job\n", input);
+        return 1;
+    }
+    
     int id = atoi(input); // Convert the job ID to an integer
 
     // Search for the job in the list
@@ -167,14 +195,22 @@ int bring_to_foreground(char *input) {
         if (current->id == id) {
             int status;
             foreground_pid = current->pid; // Set the foreground process ID
+            if (current->command[strlen(current->command) - 1] == '&') { 
+                current->command[strlen(current->command) - 1] = '\0'; 
+            }
+            printf("%s\n", current->command);
             kill(current->pid, SIGCONT); // Send SIGCONT to the process
             waitpid(current->pid, &status, WUNTRACED); 
+            if (WIFEXITED(status) || WIFSIGNALED(status)) {    // Child process terminated normally
+                removeNode_by_pid(current->pid);
+            } 
             foreground_pid = -1;
             exit_code = checking_exit_code(status);
             return 1;
         }
         current = current->next;
     } while (current != head);
+    printf("fg: %%%d: no such job\n", id); // Job not found
 
     return 1;
 }
@@ -262,7 +298,7 @@ void print_done_jobs(){
                     current->id, current->pid, current->command, current->status);
                 int idToRemove = current->id;
                 current = current->next; // Move to the next node before removing
-                removeNode(idToRemove);
+                removeNode_by_id(idToRemove);
             } else {
                 current = current->next;
             }

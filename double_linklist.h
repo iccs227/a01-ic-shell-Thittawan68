@@ -18,7 +18,8 @@ typedef struct Node {
 
 // linked list functions
 int addFirst(int pid, const char *command, const char *status);
-void removeNode(int id);
+void removeNode_by_id(int id);
+void removeNode_by_pid(int pid);
 void changeStatus(int id, const char *newStatus);
 void printList();
 int bring_to_foreground(char *input);

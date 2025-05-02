@@ -42,7 +42,7 @@ int checking_exit_code(int status) { // Check the exit code of the child process
         int signal_number = WTERMSIG(status);
         return 128 + signal_number; 
     } else if (WIFSTOPPED(status)) { // Child process stopped by a signal
-        return WSTOPSIG(status);
+        return 128 + WSTOPSIG(status);
     }
     return -1; // Unknown status
 }

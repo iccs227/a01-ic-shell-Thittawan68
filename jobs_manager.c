@@ -5,6 +5,7 @@
 #include <ctype.h> 
 #include <sys/wait.h>
 #include <stdbool.h>
+#include <unistd.h> 
 
 int size = 0;
 int current_background = 0;
@@ -72,7 +73,9 @@ void removeNode_by_id(int id) {
             free(current->command);
             free(current->status);
             free(current);
-
+            if (head->next == head) { 
+                size = 0; // Reset size if the list is empty
+            }
             to_be_printed = 1;
             return;
         }
@@ -98,7 +101,9 @@ void removeNode_by_pid(int pid) {
             free(current->command);
             free(current->status);
             free(current);
-
+            if (head->next == head) { 
+                size = 0; // Reset size if the list is empty
+            }
             to_be_printed = 1;
             return;
         }
@@ -120,7 +125,6 @@ void changeStatus(int id, const char *newStatus) {
         if (current->id == id) {
             free(current->status); 
             current->status = strdup(newStatus); 
-            printf("Node with ID %d status changed to %s.\n", id, newStatus);
             return;
         }
         current = current->next;
@@ -206,6 +210,73 @@ int bring_to_foreground(char *input) {
             } 
             foreground_pid = -1;
             exit_code = checking_exit_code(status);
+            return 1;
+        }
+        current = current->next;
+    } while (current != head);
+    printf("fg: %%%d: no such job\n", id); // Job not found
+
+    return 1;
+}
+int continue_background(char *input) {
+    if (head == NULL) {
+        printf("No background jobs to continue.\n");
+        return 1;
+    }
+
+    strcpy(last_command, input);
+
+    // Trim leading spaces
+    while (isspace(*input)) {
+        input++;
+    }
+
+    // Check if the command starts with "bg"
+    if (strncmp(input, "bg", 2) != 0) {
+        printf("Invalid command. Usage\n");
+        return 1;
+    }
+
+    // Move past "bg" and any spaces
+    input += 2;
+    while (isspace(*input)) {
+        input++;
+    }
+
+    // Check if the next character is '%'
+    if (*input != '%') {
+        printf("Invalid input format. \n");
+        return 1;
+    }
+
+    // Move past '%' and extract the job ID
+    input++;
+    while (isspace(*input)) {
+        input++;
+    }
+    if (!isdigit(*input)) { // Check if the input is not a digit
+        printf("bg: %%%s: no such job\n", input);
+        return 1;
+    }
+    
+    int id = atoi(input); // Convert the job ID to an integer
+
+    Node *current = head;
+    do {
+        if (current->id == id) {
+            //int status;
+            foreground_pid = current->pid; // Set the foreground process ID
+            if (current->command[strlen(current->command) - 1] != '&') { 
+                strcat(current->command, "&");
+            }
+            int len = snprintf(NULL, 0, "[%d]      %s\n", id, current->command); // Get length
+            char *buffer = malloc(len + 1); // Allocate memory
+            snprintf(buffer, len + 1, "[%d]      %s\n", id, current->command); // Format the string
+            write(STDOUT_FILENO, buffer, len); // Print the job status
+            free(buffer); // Free the allocated memory
+            changeStatus(current->id, "Running");
+            kill(current->pid, SIGCONT); // Send SIGCONT to the process
+            foreground_pid = -1;
             return 1;
         }
         current = current->next;

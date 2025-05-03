@@ -36,10 +36,10 @@ void handle_sigtstp() { // Handle Ctrl+Z
         char buffer[64];
         int len;
         if (command == NULL) {
-            len = snprintf(buffer, sizeof(buffer), "\n[%d]+ Stopped     %s", id, last_command); // Format the output
+            len = snprintf(buffer, sizeof(buffer), "\n[%d] Stopped     %s", id, last_command); // Format the output
         }
         else {
-            len = snprintf(buffer, sizeof(buffer), "\n[%d]+ Stopped     %s", id, command); // Format the output
+            len = snprintf(buffer, sizeof(buffer), "\n[%d] Stopped     %s", id, command); // Format the output
         }
         write(STDOUT_FILENO, buffer, len); // Print the job status
         write(STDOUT_FILENO, "\n ", 1); 

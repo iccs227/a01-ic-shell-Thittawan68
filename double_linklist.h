@@ -23,6 +23,7 @@ void removeNode_by_pid(int pid);
 void changeStatus(int id, const char *newStatus);
 void printList();
 int bring_to_foreground(char *input);
+int continue_background(char *input);
 int add_or_update_job(int pid, const char *command, const char *status);
 char* get_command_by_pid(int pid);
 bool job_is_done();

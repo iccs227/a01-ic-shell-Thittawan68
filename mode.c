@@ -42,7 +42,9 @@ int normal_mode(char *input) {
         strcpy(last_command, input);
         return print_jobs();
     } else if (strncmp(input, "fg", 2) == 0) {
-        return bring_to_foreground(input); // Bring background job to foreground
+        return bring_to_foreground(input); 
+    } else if (strncmp(input, "bg", 2) == 0) {
+        return continue_background(input); 
     } else {
         if (is_background_process(input)) { // Check if the command should run in the background
             return background_process(input);

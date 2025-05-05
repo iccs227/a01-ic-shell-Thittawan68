@@ -28,11 +28,11 @@ void handle_sigtstp() { // Handle Ctrl+Z
             id = add_or_update_job(foreground_pid, last_command, "Stopped");
         }
         else {
-            command[strlen(command) - 1] = '\0'; // Remove the newline character from the command
             id = add_or_update_job(foreground_pid, command, "Stopped"); // Update the job status to "Stopped"
         }
 
         kill(foreground_pid, SIGTSTP); // Send SIGTSTP (stop) to the foreground process
+        //weird printing to be "signal safe"
         char buffer[64];
         int len;
         if (command == NULL) {

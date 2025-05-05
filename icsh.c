@@ -14,7 +14,6 @@
 #include "double_linklist.h"
 
 #define MAX_LINE 1024   
-#define MAX_ARGS 64
 
 
 // Main loop for normal mode - reads input and executes commands

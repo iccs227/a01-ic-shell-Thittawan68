@@ -129,8 +129,6 @@ void changeStatus(int id, const char *newStatus) {
         }
         current = current->next;
     } while (current != head);
-
-    printf("Node with ID %d not found.\n", id);
 }
 
 void printList() {
@@ -140,8 +138,7 @@ void printList() {
 
     Node *current = head->prev; // Start from the first real node
     while (current != head) { // Stop when we reach the sentinel
-        printf("ID: %d, PID: %d, Command: %s, Status: %s\n",
-               current->id, current->pid, current->command, current->status);
+        printf("[%d] %s     %s\n", current->id, current->status, current->command);
         if (strcmp(current->status, "Done") == 0) {
             int idToRemove = current->id;
             current = current->prev; // Move to the next node before removing
@@ -205,7 +202,12 @@ int bring_to_foreground(char *input) {
             if (current->command[strlen(current->command) - 1] == '&') { 
                 current->command[strlen(current->command) - 1] = '\0'; 
             }
-            printf("%s\n", current->command);
+            //weird printing to be "signal safe"
+            int len = snprintf(NULL, 0, "%s\n", current->command); // Get length
+            char *buffer = malloc(len + 1); // Allocate memory
+            snprintf(buffer, len + 1, "%s\n", current->command); // Format the string
+            write(STDOUT_FILENO, buffer, len); // Print the job status
+
             kill(current->pid, SIGCONT); // Send SIGCONT to the process
             waitpid(current->pid, &status, WUNTRACED); 
             if (WIFEXITED(status) || WIFSIGNALED(status)) {    // Child process terminated normally
@@ -271,6 +273,7 @@ int continue_background(char *input) {
             if (current->command[strlen(current->command) - 1] != '&') { 
                 strcat(current->command, "&");
             }
+            //weird printing to be "signal safe"
             int len = snprintf(NULL, 0, "[%d]      %s\n", id, current->command); // Get length
             char *buffer = malloc(len + 1); // Allocate memory
             snprintf(buffer, len + 1, "[%d]      %s\n", id, current->command); // Format the string
@@ -376,8 +379,10 @@ void print_done_jobs(){
         Node *current = head->next; 
         while (current != head) { 
             if (strcmp(current->status, "Done") == 0) {
-                printf("ID: %d, PID: %d, Command: %s, Status: %s\n",
-                    current->id, current->pid, current->command, current->status);
+                if (current->command[strlen(current->command) - 1] == '&') { 
+                    current->command[strlen(current->command) - 1] = '\0'; 
+                }
+                printf("[%d] Done     %s\n", current->id, current->command);
                 int idToRemove = current->id;
                 current = current->next; // Move to the next node before removing
                 removeNode_by_id(idToRemove);

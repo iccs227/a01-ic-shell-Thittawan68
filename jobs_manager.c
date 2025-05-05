@@ -76,7 +76,7 @@ void removeNode_by_id(int id) {
             if (head->next == head) { 
                 size = 0; // Reset size if the list is empty
             }
-            to_be_printed = 1;
+            to_be_printed = 1; // tell the program there is something to print next time
             return;
         }
         current = current->next;
@@ -104,7 +104,7 @@ void removeNode_by_pid(int pid) {
             if (head->next == head) { 
                 size = 0; // Reset size if the list is empty
             }
-            to_be_printed = 1;
+            to_be_printed = 1; // tell the program there is something to print next time
             return;
         }
         current = current->next;
@@ -184,8 +184,11 @@ int bring_to_foreground(char *input) {
         return 1;
     }
 
-        // Move past '%' and extract the job ID
+    // Move past '%' and extract the job ID
     input++;
+    while (isspace(*input)) {
+        input++;
+    }
     if (!isdigit(*input)) { // Check if the input is not a digit
         printf("fg: %%%s: no such job\n", input);
         return 1;
@@ -264,8 +267,7 @@ int continue_background(char *input) {
     Node *current = head;
     do {
         if (current->id == id) {
-            //int status;
-            foreground_pid = current->pid; // Set the foreground process ID
+            foreground_pid = current->pid; 
             if (current->command[strlen(current->command) - 1] != '&') { 
                 strcat(current->command, "&");
             }
@@ -286,8 +288,11 @@ int continue_background(char *input) {
     return 1;
 }
 
+// if the jobs is not in the list, add it
+// if the jobs is in the list, update it
 int add_or_update_job(int pid, char *command, char *status) {
-    if (head == NULL) {
+    //if empty list, add the first node
+    if (head == NULL) { 
         return addFirst(pid, command, status);
     }
 
@@ -308,6 +313,7 @@ int add_or_update_job(int pid, char *command, char *status) {
     return addFirst(pid, command, status);
 }
 
+// Update the status of a job by given PID
 int update_jobs_status(int pid, char *status) {
     if (head == NULL) {
         return 0; 
@@ -326,6 +332,7 @@ int update_jobs_status(int pid, char *status) {
     return 0; 
 }
 
+//return the command of a job by given PID
 char* get_command_by_pid(int pid) {
     if (head == NULL) {
         return NULL; 
@@ -346,9 +353,12 @@ char* get_command_by_pid(int pid) {
     return NULL; // Return NULL if the node is not found
 }
 
+
 int get_size() {
     return size;
 }
+
+//trigger when their is a jobs done 
 void update_to_be_printed() {
     to_be_printed = 1;
 }
@@ -360,6 +370,7 @@ bool job_is_done(){
     return false;
 }
 
+// Print the list of jobs with status "Done" and remove them from the list
 void print_done_jobs(){
     if (to_be_printed == 1){
         Node *current = head->next; 
@@ -375,5 +386,5 @@ void print_done_jobs(){
             }
         }
     }
-    to_be_printed = 0;
+    to_be_printed = 0; // Reset the flag after printing
 }

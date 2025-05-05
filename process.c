@@ -90,7 +90,8 @@ int background_process(char *input) { // Create a new process to execute the com
     int pid = fork();
     if (pid == 0) { // Child process
         redirecting(*input_file, *output_file); // Redirect input and output files if needed
-        setpgid(0, 0); // Set the process group ID to the child process ID
+        // set the process group ID to the child process ID -> this way the background process will get affected by the signals
+        setpgid(0, 0); 
         execvp(args[0], args);
         perror("Invalid command");
         exit(EXIT_FAILURE);

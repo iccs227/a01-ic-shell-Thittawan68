@@ -27,16 +27,16 @@ int normal_loop(char *input) {
             break;
         }
 
-        if (input[0] == '\n') {
-            if (job_is_done()) {
-                print_done_jobs(); 
+        if (input[0] == '\n') { // If user presses Enter without input
+            if (job_is_done()) { // Check if any background jobs are done
+                print_done_jobs(); // Print done jobs
             }
             continue; 
         }
         
-        if (normal_mode(input)) { 
-            if (job_is_done()) {
-                print_done_jobs(); 
+        if (normal_mode(input)) {  //Normal input then do normal mode
+            if (job_is_done()) { // Check if any background jobs are done
+                print_done_jobs(); // Print done jobs
             }
             continue;
         } 
@@ -47,7 +47,6 @@ int normal_loop(char *input) {
 
 int main(int argc, char *argv[]) {
     char input[MAX_LINE];
-    //char last_command[MAX_LINE] = "";
     signal(SIGINT, handle_sigint); // Handle Ctrl+C
     signal(SIGTSTP, handle_sigtstp); // Handle Ctrl+Z
     signal(SIGCHLD, handle_sigchld); // Handle child process termination

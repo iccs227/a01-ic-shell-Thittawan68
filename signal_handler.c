@@ -24,7 +24,7 @@ void handle_sigtstp() { // Handle Ctrl+Z
         char *command = get_command_by_pid(foreground_pid); // Get the command of the foreground process
         int id = get_size();
     
-        if (command == NULL) {
+        if (command == NULL) { // If command is NULL, use the last command
             id = add_or_update_job(foreground_pid, last_command, "Stopped");
         }
         else {
@@ -54,7 +54,7 @@ void handle_sigchld() {
     int status;
     int pid;
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0){
-        update_to_be_printed(); // tell the program their something to print next time
+        update_to_be_printed(); // tell the program there is something to print next time
         update_jobs_status(pid, "Done"); // Update the job status to "Done"
         exit_code = checking_exit_code(status);
     };

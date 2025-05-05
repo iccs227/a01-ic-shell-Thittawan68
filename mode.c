@@ -62,14 +62,20 @@ int script_mode(char *input) {
             return 0;
         }
         char line[MAX_LINE];
-        while (fgets(line, sizeof(line), script_file)) {
+        while (fgets(line, sizeof(line), script_file)) { // Read each line from the script file
             if (line[0] == '\n' || strncmp(line, "##", 2) == 0 || strncmp(line, "//", 2) == 0) { // Skip empty lines and comments
+                if (job_is_done()) { // Check if any background jobs are done
+                    print_done_jobs(); // Print done jobs
+                }
                 continue; 
             }
 
             line[strcspn(line, "\n")] = '\0'; 
 
             if (normal_mode(line)) {
+                if (job_is_done()) { // Check if any background jobs are done
+                    print_done_jobs(); // Print done jobs
+                }
                 continue;
             }
         }

@@ -13,9 +13,9 @@ char last_command[MAX_LINE] = "";
 
 int echo(char *input){
     
-    if (strcmp(input + 5, "$?") == 0) {
+    if (strcmp(input + 5, "$?") == 0) { // Check if the input is "echo $?"
         printf("%d\n", exit_code);
-        exit_code = 0;
+        exit_code = 0; // Reset exit code because we assume that buit-in command is 0
         strcpy(last_command, input);
         return 1;
     }
@@ -48,19 +48,16 @@ int view(char *input) {
 
     printf("%s\n", result); // Print the final result
     strcpy(input, result);  // Update the input with the final result
-    return normal_mode(input); // Pass the updated input to normal_mode
+    return normal_mode(input); // Pass the updated input to normal_mode to execute it
 }
 
 int exit_shell(char *input){
     strcpy(last_command, input);
     int code = 0;
     if (strlen(input) > 5) {
-        code = atoi(input + 5) % 256; 
-    } else {
-        fprintf(stderr, "exit: %s: please provide exit code\n", input + 5);
-        return 1;
-    }
-    if (code < 0 || code > 255) {
+        code = atoi(input + 5) % 256; // make sure the code is between 0 and 255
+    } 
+    if (code < 0 || code > 255) { // Check if the code is not between 0 and 255
         fprintf(stderr, "exit: %s: wrong code\n", input + 5);
         return 1;
     } else {
@@ -69,7 +66,7 @@ int exit_shell(char *input){
     }
 }
 
-int print_jobs(){
+int print_jobs(){ // Print the list of jobs
     printList();
     return 1;
 }

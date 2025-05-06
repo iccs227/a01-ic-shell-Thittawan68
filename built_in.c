@@ -19,6 +19,7 @@ int echo(char *input){
         strcpy(last_command, input);
         return 1;
     }
+    exit_code = 0; // Reset exit code because we assume that buit-in command is 0
     strcpy(last_command, input);
     printf("%s\n", input + 5);
     return 1;
@@ -45,7 +46,7 @@ int view(char *input) {
         // If "!!" is not found, just copy the input as is
         strcpy(result, input);
     }
-
+    exit_code = 0; // Reset exit code because we assume that buit-in command is 0
     printf("%s\n", result); // Print the final result
     strcpy(input, result);  // Update the input with the final result
     return normal_mode(input); // Pass the updated input to normal_mode to execute it
@@ -67,6 +68,7 @@ int exit_shell(char *input){
 }
 
 int print_jobs(){ // Print the list of jobs
+    exit_code = 0; // Reset exit code because we assume that buit-in command is 0
     printList();
     return 1;
 }

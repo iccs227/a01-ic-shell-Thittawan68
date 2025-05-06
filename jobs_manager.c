@@ -11,6 +11,7 @@ int size = 0;
 int current_background = 0;
 int prev_background = 0;
 int to_be_printed = 0;
+int background_exit_printed = 0; // Global variable to indicate if there is something to print
 
 // Define the structure of Node
 typedef struct Node {
@@ -392,4 +393,29 @@ void print_done_jobs(){
         }
     }
     to_be_printed = 0; // Reset the flag after printing
+}
+void delete_first() {
+    if (head->next == head) { // Check if the list is empty (only sentinel exists)
+        printf("List is empty.\n");
+        return;
+    }
+
+    Node *firstNode = head->next; // Get the first real node
+    head->next = firstNode->next; // Update the sentinel's next pointer
+    firstNode->next->prev = head; // Update the next node's prev pointer
+
+    free(firstNode->command);
+    free(firstNode->status);
+    free(firstNode);
+}
+
+void print_exit_jobs(){
+    if (background_exit_printed){
+        delete_first(); // Remove the first node from the list
+        char buffer[64];
+        int len;
+        len = snprintf(buffer, sizeof(buffer), "\n[%d] Exit 127    %s\n", size, last_command); // Format the output
+        write(STDOUT_FILENO, buffer, len);
+    }
+    background_exit_printed = 0; // Reset the flag after printing
 }

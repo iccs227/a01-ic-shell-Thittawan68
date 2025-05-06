@@ -53,9 +53,15 @@ void handle_sigtstp() { // Handle Ctrl+Z
 void handle_sigchld() {
     int status;
     int pid;
+    //int id = get_size();
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0){
-        update_to_be_printed(); // tell the program there is something to print next time
-        update_jobs_status(pid, "Done"); // Update the job status to "Done"
         exit_code = checking_exit_code(status);
+        if (exit_code != 1){
+            update_to_be_printed(); // tell the program there is something to print next time
+            update_jobs_status(pid, "Done"); // Update the job status to "Done"
+        }
+        else{
+            background_exit_printed = 1; // Invalid background process
+        }        
     };
 }

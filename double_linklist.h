@@ -31,4 +31,5 @@ int get_size();
 void update_to_be_printed();
 int update_jobs_status(int pid, char *status);
 void print_done_jobs();
+void print_exit_jobs();
 #endif

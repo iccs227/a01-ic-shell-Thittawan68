@@ -50,6 +50,9 @@ void handle_sigtstp() { // Handle Ctrl+Z
     }
 }
 
+/*
+This function modify "background_exit_printed", so it should be used with caution
+*/
 void handle_sigchld() {
     int status;
     int pid;

@@ -24,7 +24,9 @@ bool is_background_process(char *input) { // Check if the command should run in 
     }
     return 0; // Foreground process
 }
-
+/*
+This function modify "last_command" variable, so it should be used with caution
+*/
 // Reads input and executes commands
 int normal_mode(char *input) { 
     input[strcspn(input, "\n")] = '\0'; // Remove newline character
@@ -46,7 +48,7 @@ int normal_mode(char *input) {
     } else if (strncmp(input, "bg", 2) == 0) {
         return continue_background(input); 
     } else {
-        if (is_background_process(input)) { // Check if the command should run in the background
+        if (is_background_process(input)) { // Check if the command should run in the background 
             return background_process(input);
         } else {
             return new_process(input); // Not a built-in command

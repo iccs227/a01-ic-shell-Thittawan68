@@ -16,20 +16,31 @@ typedef struct Node {
 } Node;
 
 
-// linked list functions
+// Modify the structure of JobList
 int addFirst(int pid, const char *command, const char *status);
+int add_or_update_job(int pid, const char *command, const char *status);
+void changeStatus(int id, const char *newStatus);
+int update_jobs_status(int pid, char *status);
+
+//Remove Node from given parameter
 void removeNode_by_id(int id);
 void removeNode_by_pid(int pid);
-void changeStatus(int id, const char *newStatus);
-void printList();
+
+
+//fg and bg functions
 int bring_to_foreground(char *input);
 int continue_background(char *input);
-int add_or_update_job(int pid, const char *command, const char *status);
+
+
+// Get important information
 char* get_command_by_pid(int pid);
-bool job_is_done();
 int get_size();
-void update_to_be_printed();
-int update_jobs_status(int pid, char *status);
+
+
+// Relate to printing
+void printList();
 void print_done_jobs();
 void print_exit_jobs();
+void update_to_be_printed();
+bool job_is_done();
 #endif

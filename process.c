@@ -47,6 +47,9 @@ int checking_exit_code(int status) { // Check the exit code of the child process
     return -1; // Unknown status
 }
 
+/*
+This function modify "exit_code" & "foregound_pid" & "last_command"variable, so it should be used with caution
+*/
 int new_process(char *input) { // Create a new process to execute the command
     char *args[MAX_LINE];
     char *input_file[MAX_LINE];
@@ -75,6 +78,9 @@ int new_process(char *input) { // Create a new process to execute the command
     }
 }
 
+/*
+This function modify "last_command" variable, so it should be used with caution
+*/
 int background_process(char *input) { // Create a new process to execute the command in the background
     char *args[MAX_LINE];
     char *input_file[MAX_LINE];

@@ -9,6 +9,13 @@
 #define MAX_LINE 1024   
 #define MAX_ARGS 64
 
+/*
+Every function here except exit_shell modify "exit_code" variable, so it should be used with caution
+*/
+/*
+Every function here except print_jobs modify "last_command" variable, so it should be used with caution
+*/
+
 char last_command[MAX_LINE] = "";
 
 int echo(char *input){

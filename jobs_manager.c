@@ -7,11 +7,9 @@
 #include <stdbool.h>
 #include <unistd.h> 
 
-int size = 0;
-int current_background = 0;
-int prev_background = 0;
-int to_be_printed = 0;
-int background_exit_printed = 0; // Global variable to indicate if there is something to print
+int size = 0; //Total size of the list 
+int to_be_printed = 0; // Global variable to indicate if there is something to print (when background process is Done)
+int background_exit_printed = 0; // Global variable to indicate if there is something to print (when input "&" doesn't have the right command Ex: "slep 200 &")
 
 // Define the structure of Node
 typedef struct Node {
@@ -28,6 +26,9 @@ Node sentinel = { .id = 0, .pid = 0, .command = NULL, .status = NULL, .prev = &s
 Node *head = &sentinel; 
 
 // Function to create a new node with malloc
+/*
+This function modify "size" variable, so it should be used with caution
+*/
 Node* createNode(int pid, const char *command, const char *status) {
     Node *newNode = (Node *)malloc(sizeof(Node));
     if (newNode == NULL) {
@@ -44,6 +45,10 @@ Node* createNode(int pid, const char *command, const char *status) {
     return newNode;
 }
 
+// Add a new node to the list
+/*
+This function modify "size" variable, so it should be used with caution
+*/
 int addFirst(int pid, const char *command, const char *status) {
     Node *newNode = createNode(pid, command, status);
 
@@ -56,6 +61,10 @@ int addFirst(int pid, const char *command, const char *status) {
     return newNode->id; 
 }
 
+// Remove a node by its ID
+/*
+This function modify "size" and "to_be_printed" variable, so it should be used with caution
+*/
 void removeNode_by_id(int id) {
     if (head->next == head) { // Check if the list is empty (only sentinel exists)
         printf("List is empty.\n");
@@ -84,6 +93,10 @@ void removeNode_by_id(int id) {
     }
 }
 
+// Remove a node by given PID
+/*
+This function modify "size" & "to_be_printed" variable, so it should be used with caution
+*/
 void removeNode_by_pid(int pid) {
     if (head->next == head) { // Check if the list is empty (only sentinel exists)
         printf("List is empty.\n");
@@ -150,7 +163,9 @@ void printList() {
     }
 }
 
-
+/*
+This function modify "exit_code" & "foreground_pid" & "last_command"variable, so it should be used with caution
+*/
 int bring_to_foreground(char *input) {
     if (head == NULL) {
         printf("No background jobs to bring to foreground.\n");
@@ -224,6 +239,10 @@ int bring_to_foreground(char *input) {
 
     return 1;
 }
+
+/*
+This function modify "foreground_pid" & "last_command" variable, so it should be used with caution
+*/
 int continue_background(char *input) {
     if (head == NULL) {
         printf("No background jobs to continue.\n");
@@ -357,16 +376,20 @@ char* get_command_by_pid(int pid) {
     return NULL; // Return NULL if the node is not found
 }
 
-
+// Get the size of the list
 int get_size() {
     return size;
 }
 
-//trigger when their is a jobs done 
+/*
+This function modify "to_be_printed" variable, so it should be used with caution
+*/
 void update_to_be_printed() {
     to_be_printed = 1;
 }
 
+
+// Check if there thing to print
 bool job_is_done(){
     if (to_be_printed == 1){
         return true;
@@ -375,6 +398,9 @@ bool job_is_done(){
 }
 
 // Print the list of jobs with status "Done" and remove them from the list
+/*
+This function modify "to_be_printed" variable, so it should be used with caution
+*/
 void print_done_jobs(){
     if (to_be_printed == 1){
         Node *current = head->next; 
@@ -394,6 +420,8 @@ void print_done_jobs(){
     }
     to_be_printed = 0; // Reset the flag after printing
 }
+
+// Delete the first node from the list
 void delete_first() {
     if (head->next == head) { // Check if the list is empty (only sentinel exists)
         printf("List is empty.\n");
@@ -409,6 +437,10 @@ void delete_first() {
     free(firstNode);
 }
 
+// Print the exit jobs when input "&" doesn't have the right command Ex: "slep 200 &"
+/*
+This function modify "background_exit_printed" variable, so it should be used with caution
+*/
 void print_exit_jobs(){
     if (background_exit_printed){
         delete_first(); // Remove the first node from the list

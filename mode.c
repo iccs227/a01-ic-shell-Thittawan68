@@ -97,7 +97,7 @@ int script_mode(char *input) {
 
 int chain_mode(char *input) { // Handle command chaining
     in_chain = 1; // Set the in_chain flag to indicate that we are in chain mode
-    strcpy(chain_command, last_command); // Store the chain command
+    strcpy(chain_command, last_command); // Store the command before chain command 
     strcpy(last_command, input);
     char *args[MAX_LINE];
     parse_input_for_chain(input, args); // Parse the input string into arguments

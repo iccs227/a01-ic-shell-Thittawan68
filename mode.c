@@ -6,10 +6,13 @@
 #include "icsh.h"
 #include "double_linklist.h"
 
-#define MAX_LINE 1024   
-#define MAX_ARGS 64
+
+int chain_mode(char *input);
+char chain_command[MAX_LINE] = ""; // Global variable to store before chain command
 
 int exit_code = 0; // Global variable to store the exit code of the last command
+int in_chain = 0; // Global variable to indicate if the command is in a chain
+
 
 // Check if the input string contains redirection operators
 bool is_redirected(char *input) {
@@ -31,10 +34,14 @@ This function modify "last_command" variable, so it should be used with caution
 int normal_mode(char *input) { 
     input[strcspn(input, "\n")] = '\0'; // Remove newline character
     parse_input_with_spaces(input); // Remove leading spaces
+
     if (is_redirected(input)) {
         return new_process(input); // Handle redirection
     }
-    if (strstr(input, "!!") != NULL){
+
+    if (strstr(input, ";") != NULL){
+        return chain_mode(input); 
+    } else if (strstr(input, "!!") != NULL){
         return view(input);
     } else if (strncmp(input, "echo ", 5) == 0) {
         return echo(input);
@@ -86,4 +93,21 @@ int script_mode(char *input) {
         fclose(script_file);
 
     return 0;
+}
+
+int chain_mode(char *input) { // Handle command chaining
+    in_chain = 1; // Set the in_chain flag to indicate that we are in chain mode
+    strcpy(chain_command, last_command); // Store the chain command
+    strcpy(last_command, input);
+    char *args[MAX_LINE];
+    parse_input_for_chain(input, args); // Parse the input string into arguments
+
+    for (int i = 0; args[i] != NULL; i++) {
+        if (normal_mode(args[i]) == 0) { // Execute each command in the chain
+            break;
+        }
+    }
+    in_chain = 0; // Reset the in_chain flag
+    
+    return 1;
 }

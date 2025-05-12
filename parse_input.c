@@ -34,3 +34,13 @@ void parse_input_with_spaces(char *input) {
     }
     memmove(input, trimmed_input, strlen(trimmed_input) + 1); // Move the trimmed string to the beginning of the input
 }
+
+void parse_input_for_chain(char *input, char **args) { 
+    int i = 0;
+    args[i] = strtok(input, ";"); // Get the first argument
+    while (args[i] != NULL && i < MAX_LINE - 1) { // Get split the rest of the arguments
+        //printf("%s", args[i]);
+        args[++i] = strtok(NULL, ";");
+    }
+    args[i] = NULL;
+}

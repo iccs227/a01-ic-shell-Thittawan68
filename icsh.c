@@ -13,7 +13,7 @@
 #include "icsh.h"
 #include "double_linklist.h"
 
-#define MAX_LINE 1024   
+#define MAX_LINE 255   
 
 
 // Main loop for normal mode - reads input and executes commands

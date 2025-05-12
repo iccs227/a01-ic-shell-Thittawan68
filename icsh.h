@@ -3,16 +3,19 @@
 #include <signal.h>
 #include <sys/types.h>
 
-#define MAX_LINE 1024
+#define MAX_LINE 255
 
 extern char last_command[MAX_LINE];  // Global variable to store the last command
 extern pid_t foreground_pid; /// Global variable to store the foreground process ID
 extern int exit_code; // Global variable to store the exit code of the last command
 extern int background_exit_printed; // Global variable to indicate if there is something to print (when background process is Done)
+extern int in_chain; // Global variable to indicate if the command is in a chain
+extern char chain_command[MAX_LINE]; // Global variable to indicate if the command is in a chain
 
 // parse_input function
 void parse_input(char *input, char **args, char **input_file, char **output_file);
 void parse_input_with_spaces(char *input); 
+void parse_input_for_chain(char *input, char **args);
 
 // mode functions
 int normal_mode(char *input);

@@ -4,63 +4,42 @@
 #include <stdbool.h>
 
 #include "icsh.h"
-#include "double_linklist.h"
+#include "jobs_manager.h"
 
 
 int chain_mode(char *input);
-char chain_command[MAX_LINE] = ""; // Global variable to store before chain command
+char command_before_chain_command[MAX_LINE] = ""; // Global variable to store before chain command
 
 int exit_code = 0; // Global variable to store the exit code of the last command
 int in_chain = 0; // Global variable to indicate if the command is in a chain
 
-
-// Check if the input string contains redirection operators
-bool is_redirected(char *input) {
-    return (strchr(input, '>') != NULL || strchr(input, '<') != NULL); 
-}
-
-bool is_background_process(char *input) { // Check if the command should run in the background
-    char *ampersand = strchr(input, '&');
-    if (ampersand != NULL) {
-        *ampersand = '\0'; // Remove the '&' character from the input string
-        return 1; // Background process
-    }
-    return 0; // Foreground process
-}
-/*
-This function modify "last_command" variable, so it should be used with caution
-*/
-// Reads input and executes commands
+// Main loop for normal mode - reads input and executes commands
 int normal_mode(char *input) { 
-    input[strcspn(input, "\n")] = '\0'; // Remove newline character
-    parse_input_with_spaces(input); // Remove leading spaces
+    while (1) {
+        printf("icsh $ ");
+        fflush(stdout);
 
-    if (is_redirected(input)) {
-        return new_process(input); // Handle redirection
-    }
-
-    if (strstr(input, ";") != NULL){
-        return chain_mode(input); 
-    } else if (strstr(input, "!!") != NULL){
-        return view(input);
-    } else if (strncmp(input, "echo ", 5) == 0) {
-        return echo(input);
-    } else if (strncmp(input, "exit", 4) == 0) {
-        return exit_shell(input);
-    } else if (strncmp(input, "jobs", 4) == 0) {
-        strcpy(last_command, input);
-        return print_jobs();
-    } else if (strncmp(input, "fg", 2) == 0) {
-        return bring_to_foreground(input); 
-    } else if (strncmp(input, "bg", 2) == 0) {
-        return continue_background(input); 
-    } else {
-        if (is_background_process(input)) { // Check if the command should run in the background 
-            return background_process(input);
-        } else {
-            return new_process(input); // Not a built-in command
+        if (!fgets(input, MAX_LINE, stdin)) { // Read input from stdin
+            break;
         }
+
+        if (input[0] == '\n') { // If user presses Enter without input
+            if (job_is_done()) { // Check if any background jobs are done
+                print_done_jobs(); // Print done jobs
+            } else if (background_exit_printed == 1) {  
+                print_exit_jobs(); 
+            }
+            continue; 
+        }
+        
+        if (command_factory(input)) {  //Normal input then do normal mode
+            if (job_is_done()) { // Check if any background jobs are done
+                print_done_jobs(); // Print done jobs
+            }            
+            continue;
+        } 
     }
+    return 0;
 }
 
 // Reads input from a script file and executes commands
@@ -83,7 +62,7 @@ int script_mode(char *input) {
 
             line[strcspn(line, "\n")] = '\0'; 
 
-            if (normal_mode(line)) {
+            if (command_factory(line)) {
                 if (job_is_done()) { // Check if any background jobs are done
                     print_done_jobs(); // Print done jobs
                 }
@@ -95,19 +74,35 @@ int script_mode(char *input) {
     return 0;
 }
 
-int chain_mode(char *input) { // Handle command chaining
+/*
+This function modify "in_chain" variable, so it should be used with caution
+*/
+// Handle command chaining
+int chain_mode(char *input) { 
     in_chain = 1; // Set the in_chain flag to indicate that we are in chain mode
-    strcpy(chain_command, last_command); // Store the command before chain command 
-    strcpy(last_command, input);
+    strcpy(command_before_chain_command, last_command); // Store the command before chain command 
+
+    char new_chain_command[MAX_LINE]; 
+    strcpy(new_chain_command, input); // Use to change last_command at the end 
+
+    if (strstr(new_chain_command, "!!") != NULL) { // Check if the command contains "!!"
+        parse_double_bash(new_chain_command); // Replace "!!" with the last command
+    }
+
+    char for_parse_chain_command[MAX_LINE];
+    strcpy(for_parse_chain_command, new_chain_command); // Use for parsing 
+
+    printf("%s\n", new_chain_command);
+
     char *args[MAX_LINE];
-    parse_input_for_chain(input, args); // Parse the input string into arguments
+    parse_input_for_chain(for_parse_chain_command, args); // Parse the input string into arguments
 
     for (int i = 0; args[i] != NULL; i++) {
-        if (normal_mode(args[i]) == 0) { // Execute each command in the chain
+        if (command_factory(args[i]) == 0) { // Execute each command in the chain
             break;
         }
     }
+    strcpy(last_command, new_chain_command); // Store the last command
     in_chain = 0; // Reset the in_chain flag
-    
     return 1;
 }

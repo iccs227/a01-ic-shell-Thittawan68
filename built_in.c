@@ -4,7 +4,7 @@
 
 
 #include "icsh.h"
-#include "double_linklist.h"
+#include "jobs_manager.h"
 
 
 /*
@@ -39,7 +39,7 @@ int view(char *input) {
     char *pos = strstr(input, "!!"); // Find the position of "!!"
 
     if (in_chain == 1) { // If the command is in a chain
-        strcpy(last_command, chain_command); // Copy the chain command to the result
+        strcpy(last_command, command_before_chain_command); // Copy the chain command to the result
     } 
 
     if (pos != NULL) {
@@ -59,7 +59,7 @@ int view(char *input) {
     exit_code = 0; // Reset exit code because we assume that buit-in command is 0
     printf("%s\n", result); // Print the final result
     strcpy(args, result);  // Update the input with the final result
-    return normal_mode(args); // Pass the updated input to normal_mode to execute it
+    return command_factory(args); // Pass the updated input to normal_mode to execute it
 }
 
 int exit_shell(char *input){

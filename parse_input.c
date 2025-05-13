@@ -39,8 +39,18 @@ void parse_input_for_chain(char *input, char **args) {
     int i = 0;
     args[i] = strtok(input, ";"); // Get the first argument
     while (args[i] != NULL && i < MAX_LINE - 1) { // Get split the rest of the arguments
-        //printf("%s", args[i]);
         args[++i] = strtok(NULL, ";");
     }
     args[i] = NULL;
+}
+
+void parse_double_bash(char *new_chain_command) { 
+    
+    // Replace "!!" in temp_chain_command with last_command
+    char *pos = strstr(new_chain_command, "!!"); // Find the position of "!!"
+    char replaced_command[MAX_LINE] = ""; // Buffer to store the updated command
+    strncat(replaced_command, new_chain_command, pos - new_chain_command); // Copy the part before "!!"
+    strcat(replaced_command, last_command); // Append the last command
+    strcat(replaced_command, pos + 2); // Append the part after "!!"
+    strcpy(new_chain_command, replaced_command); // Update temp_chain_command
 }

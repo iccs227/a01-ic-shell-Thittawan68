@@ -11,40 +11,12 @@
 #include <sys/wait.h>
 
 #include "icsh.h"
-#include "double_linklist.h"
+#include "jobs_manager.h"
 
 #define MAX_LINE 255   
 
 
-// Main loop for normal mode - reads input and executes commands
-int normal_loop(char *input) { 
-    while (1) {
-        printf("icsh $ ");
-        fflush(stdout);
 
-        if (!fgets(input, MAX_LINE, stdin)) { // Read input from stdin
-            break;
-        }
-
-        if (input[0] == '\n') { // If user presses Enter without input
-            if (job_is_done()) { // Check if any background jobs are done
-                print_done_jobs(); // Print done jobs
-            } else if (background_exit_printed == 1) {  
-                print_exit_jobs(); 
-            }
-            continue; 
-        }
-        
-        if (normal_mode(input)) {  //Normal input then do normal mode
-            if (job_is_done()) { // Check if any background jobs are done
-                print_done_jobs(); // Print done jobs
-            }            
-            continue;
-        } 
-    }
-
-    return 0;
-}
 
 int main(int argc, char *argv[]) {
     char input[MAX_LINE];
@@ -57,7 +29,7 @@ int main(int argc, char *argv[]) {
             script_mode(argv[1]); // Run in script mode
         }
     } else {
-        normal_loop(input); // Run in normal mode
+        normal_mode(input); // Run in normal mode
     }
     
 }

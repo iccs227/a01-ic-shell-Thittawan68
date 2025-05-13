@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "icsh.h"
-#include "double_linklist.h"
+#include "jobs_manager.h"
 
 void handle_sigint() { // Handle Ctrl+C
     if (foreground_pid > 0) {
@@ -56,7 +56,6 @@ This function modify "background_exit_printed", so it should be used with cautio
 void handle_sigchld() {
     int status;
     int pid;
-    //int id = get_size();
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0){
         exit_code = checking_exit_code(status);
         if (exit_code != 1){

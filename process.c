@@ -8,7 +8,7 @@
 #include <fcntl.h>
 
 #include "icsh.h"
-#include "double_linklist.h"
+#include "jobs_manager.h"
 
 
 pid_t foreground_pid = -1; // Global variable to store the foreground process ID

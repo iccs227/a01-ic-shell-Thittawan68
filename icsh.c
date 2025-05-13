@@ -11,11 +11,8 @@
 #include <sys/wait.h>
 
 #include "icsh.h"
-#include "jobs_manager.h"
 
 #define MAX_LINE 255   
-
-
 
 
 int main(int argc, char *argv[]) {

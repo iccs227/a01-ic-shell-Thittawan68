@@ -43,4 +43,8 @@ void print_done_jobs();
 void print_exit_jobs();
 void update_to_be_printed();
 bool job_is_done();
+
+//Kill all jobs
+void kill_all_jobs();
+
 #endif

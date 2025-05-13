@@ -72,6 +72,7 @@ int exit_shell(char *input){
         fprintf(stderr, "exit: %s: wrong code\n", input + 5);
         return 1;
     } else {
+        kill_all_jobs(); // Kill all background jobs
         printf("bye\n");
         exit(code);
     }

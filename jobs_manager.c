@@ -451,3 +451,11 @@ void print_exit_jobs(){
     }
     background_exit_printed = 0; // Reset the flag after printing
 }
+
+void kill_all_jobs() {
+    Node *current = head->next; // Start from the first real node
+    while (current != head) { // Stop when we reach the sentinel
+        kill(current->pid, SIGKILL); // Send SIGKILL to the process
+        current = current->next;
+    }
+}

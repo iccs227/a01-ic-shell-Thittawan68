@@ -17,7 +17,6 @@ Every function here except print_jobs modify "last_command" variable, so it shou
 char last_command[MAX_LINE] = "";
 
 int echo(char *input){
-    
     if (strcmp(input + 5, "$?") == 0) { // Check if the input is "echo $?"
         printf("%d\n", exit_code);
         exit_code = 0; // Reset exit code because we assume that buit-in command is 0

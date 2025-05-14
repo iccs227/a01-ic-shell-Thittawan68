@@ -45,34 +45,43 @@ int normal_mode(char *input) {
 // Reads input from a script file and executes commands
 int script_mode(char *input) { 
     FILE *script_file = fopen(input, "r");
-        if (script_file == NULL) {
-            fprintf(stderr, "Error opening script file: %s\n", input);
-            return 0;
+    if (script_file == NULL) {
+        fprintf(stderr, "Error opening script file: %s\n", input);
+        return 0;
+    }
+
+    // Array to store all lines from the script file
+    char commands[MAX_LINE][MAX_LINE];
+    int command_count = 0;
+
+    // Read the entire file into the commands array
+    char line[MAX_LINE];
+    while (fgets(line, sizeof(line), script_file)) {
+        // Skip empty lines and comments
+        if (line[0] == '\n' || strncmp(line, "##", 2) == 0 || strncmp(line, "//", 2) == 0) {
+            continue;
         }
-        char line[MAX_LINE];
-        while (fgets(line, sizeof(line), script_file)) { // Read each line from the script file
-            if (line[0] == '\n' || strncmp(line, "##", 2) == 0 || strncmp(line, "//", 2) == 0) { // Skip empty lines and comments
-                if (job_is_done()) { // Check if any background jobs are done
-                    print_done_jobs(); // Print done jobs
-                } else if (background_exit_printed == 1) { 
-                    print_exit_jobs(); 
-                }
-                continue; 
-            }
 
-            line[strcspn(line, "\n")] = '\0'; 
+        line[strcspn(line, "\n")] = '\0'; 
+        strcpy(commands[command_count], line); // Store the line in the commands array
+        command_count++;
+    }
+    fclose(script_file);
 
-            if (command_factory(line)) {
-                if (job_is_done()) { // Check if any background jobs are done
-                    print_done_jobs(); // Print done jobs
-                }
-                continue;
+    // Process each command from the commands array
+    printf("\n"); 
+    for (int i = 0; i < command_count; i++) {
+        if (command_factory(commands[i])) { // Execute each command
+            if (job_is_done()) { 
+                print_done_jobs(); 
             }
+            continue;
         }
-        fclose(script_file);
-
+    }
+    normal_mode(input); // Continue in normal mode after processing the script
     return 0;
 }
+
 
 /*
 This function modify "in_chain" variable, so it should be used with caution

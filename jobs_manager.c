@@ -33,7 +33,7 @@ Node* createNode(int pid, const char *command, const char *status) {
     Node *newNode = (Node *)malloc(sizeof(Node));
     if (newNode == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
+        exit((u_int8_t)EXIT_FAILURE);
     }
     newNode->pid = pid;
     newNode->command = strdup(command); // Duplicate the command string

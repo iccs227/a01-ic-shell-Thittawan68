@@ -64,17 +64,11 @@ int view(char *input) {
 int exit_shell(char *input){
     strcpy(last_command, input);
     int code = 0;
-    if (strlen(input) > 5) {
-        code = atoi(input + 5) % 256; // make sure the code is between 0 and 255
-    } 
-    if (code < 0 || code > 255) { // Check if the code is not between 0 and 255
-        fprintf(stderr, "exit: %s: wrong code\n", input + 5);
-        return 1;
-    } else {
-        kill_all_jobs(); // Kill all background jobs
-        printf("bye\n");
-        exit(code);
-    }
+    code = atoi(input + 5) & 0xFF; // make sure the code is between 0 and 255
+    kill_all_jobs(); // Kill all background jobs
+    printf("bye\n");
+    exit((u_int8_t)code);
+    
 }
 
 int print_jobs(){ // Print the list of jobs

@@ -10,7 +10,7 @@
 int chain_mode(char *input);
 char command_before_chain_command[MAX_LINE] = ""; // Global variable to store before chain command
 
-int exit_code = 0; // Global variable to store the exit code of the last command
+u_int8_t exit_code = 0; // Global variable to store the exit code of the last command
 int in_chain = 0; // Global variable to indicate if the command is in a chain
 
 // Main loop for normal mode - reads input and executes commands

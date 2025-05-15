@@ -18,7 +18,7 @@ void redirecting(char *input_file, char *output_file) { // Redirect input and ou
         int file = open(input_file, O_RDONLY); // Redirect input, read only
         if (file < 0) {
             perror("Error opening input file");
-            exit(EXIT_FAILURE);
+            exit((u_int8_t)EXIT_FAILURE);
         }
         dup2(file, STDIN_FILENO);
         close(file);
@@ -27,7 +27,7 @@ void redirecting(char *input_file, char *output_file) { // Redirect input and ou
         int file = open(output_file, O_WRONLY | O_CREAT, 0777); // Redirect output file, write only or create if not exist
         if (file < 0) {
             perror("Error opening output file");
-            exit(EXIT_FAILURE);
+            exit((u_int8_t)EXIT_FAILURE);
         }
         dup2(file, STDOUT_FILENO); 
         close(file);
@@ -62,7 +62,7 @@ int new_process(char *input) { // Create a new process to execute the command
         redirecting(*input_file, *output_file); // Redirect input and output files if needed
         execvp(args[0], args);
         perror("Invalid command");
-        exit(EXIT_FAILURE);
+        exit((u_int8_t)EXIT_FAILURE);
     } else if (pid < 0) { // Fork failed
         perror ("Fork failed"); 
         return 0;
@@ -98,7 +98,7 @@ int background_process(char *input) { // Create a new process to execute the com
         setpgid(0, 0); 
         execvp(args[0], args);
         perror("Invalid command");
-        exit(EXIT_FAILURE);
+        exit((u_int8_t)EXIT_FAILURE);
     } else if (pid < 0) { // Fork failed        
         perror ("Fork failed"); 
         return 0;

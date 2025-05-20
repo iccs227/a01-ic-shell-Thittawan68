@@ -2,3 +2,8 @@
 # ICSH
 
 Please describe your assumptions and/or implementation here. 
+
+For milestone 7, I make it so that you can do chain command (put ; after each command to do chain command)
+Ex:
+sleep 20 &; echo hello; ls
+

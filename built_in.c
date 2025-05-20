@@ -67,7 +67,7 @@ int exit_shell(char *input){
     code = atoi(input + 5) & 0xFF; // make sure the code is between 0 and 255
     kill_all_jobs(); // Kill all background jobs
     printf("bye\n");
-    exit((u_int8_t)code);
+    exit(code);
     
 }
 

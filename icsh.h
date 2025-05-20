@@ -2,12 +2,12 @@
 #define ICHS_H
 #include <signal.h>
 #include <sys/types.h>
-
+#include <stdint.h>
 #define MAX_LINE 255
 
 extern char last_command[MAX_LINE];  // Global variable to store the last command
 extern pid_t foreground_pid; /// Global variable to store the foreground process ID
-extern u_int8_t exit_code; // Global variable to store the exit code of the last command
+extern int exit_code; // Global variable to store the exit code of the last command
 extern int background_exit_printed; // Global variable to indicate if there is something to print (when background process is Done)
 extern int in_chain; // Global variable to indicate if the command is in a chain
 extern char command_before_chain_command[MAX_LINE]; // Global variable to store command before chain command

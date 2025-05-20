@@ -33,11 +33,11 @@ Node* createNode(int pid, const char *command, const char *status) {
     Node *newNode = (Node *)malloc(sizeof(Node));
     if (newNode == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
-        exit((u_int8_t)EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
     newNode->pid = pid;
-    newNode->command = strdup(command); // Duplicate the command string
-    newNode->status = strdup(status);   // Duplicate the status string
+    newNode->command = strdup(command); 
+    newNode->status = strdup(status);   
     newNode->prev = NULL;
     newNode->next = NULL;
     size++;
@@ -428,9 +428,9 @@ void delete_first() {
         return;
     }
 
-    Node *firstNode = head->next; // Get the first real node
-    head->next = firstNode->next; // Update the sentinel's next pointer
-    firstNode->next->prev = head; // Update the next node's prev pointer
+    Node *firstNode = head->next; 
+    head->next = firstNode->next; 
+    firstNode->next->prev = head; 
 
     free(firstNode->command);
     free(firstNode->status);

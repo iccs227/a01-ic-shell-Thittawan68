@@ -10,7 +10,7 @@
 int chain_mode(char *input);
 char command_before_chain_command[MAX_LINE] = ""; // Global variable to store before chain command
 
-u_int8_t exit_code = 0; // Global variable to store the exit code of the last command
+int exit_code = 0; // Global variable to store the exit code of the last command
 int in_chain = 0; // Global variable to indicate if the command is in a chain
 
 // Main loop for normal mode - reads input and executes commands
@@ -25,7 +25,7 @@ int normal_mode(char *input) {
 
         if (input[0] == '\n') { // If user presses Enter without input
             if (job_is_done()) { // Check if any background jobs are done
-                print_done_jobs(); // Print done jobs
+                print_done_jobs(); 
             } else if (background_exit_printed == 1) {  
                 print_exit_jobs(); 
             }
@@ -34,7 +34,7 @@ int normal_mode(char *input) {
         
         if (command_factory(input)) {  //Normal input then do normal mode
             if (job_is_done()) { // Check if any background jobs are done
-                print_done_jobs(); // Print done jobs
+                print_done_jobs(); 
             }            
             continue;
         } 

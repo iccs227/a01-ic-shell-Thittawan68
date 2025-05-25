@@ -78,13 +78,17 @@ int script_mode(char *input) {
     printf("\n"); 
     for (int i = 0; i < command_count; i++) {
         if (command_factory(commands[i])) { // Execute each command
+            if (saved_stdout != -1) {
+                dup2(saved_stdout, STDOUT_FILENO);
+                close(saved_stdout);
+                saved_stdout = -1;
+            }
             if (job_is_done()) { 
                 print_done_jobs(); 
             }
             continue;
         }
     }
-    normal_mode(input); // Continue in normal mode after processing the script
     return 0;
 }
 
@@ -117,10 +121,10 @@ int chain_mode(char *input) {
                 dup2(saved_stdout, STDOUT_FILENO);
                 close(saved_stdout);
                 saved_stdout = -1;
-            }
-            if (job_is_done()) { // Check if any background jobs are done
+        }
+        if (job_is_done()) { // Check if any background jobs are done
                 print_done_jobs(); 
-            } 
+        } 
         if (command_factory(args[i]) == 0) { // Execute each command in the chain
             break;
         }

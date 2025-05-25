@@ -3,6 +3,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <stdint.h>
+#include <stdbool.h>
 #define MAX_LINE 255
 
 extern char last_command[MAX_LINE];  // Global variable to store the last command
@@ -11,13 +12,14 @@ extern int exit_code; // Global variable to store the exit code of the last comm
 extern int background_exit_printed; // Global variable to indicate if there is something to print (when background process is Done)
 extern int in_chain; // Global variable to indicate if the command is in a chain
 extern char command_before_chain_command[MAX_LINE]; // Global variable to store command before chain command
+extern int saved_stdout; // Global variable to store the original stdout file descriptor
 
 // parse_input function
 void parse_input(char *input, char **args, char **input_file, char **output_file);
 void parse_input_with_spaces(char *input); 
 void parse_input_for_chain(char *input, char **args);
 void parse_double_bash(char *temp_chain_command);
-
+void get_command_before_redirection(const char *input, char *command, char **input_file, char **output_file);
 // mode functions
 int command_factory(char *input);
 int script_mode(char *input);
@@ -34,6 +36,9 @@ int print_jobs();
 int new_process(char *input); //normal new process
 int background_process(char *input); // process spesific to background
 int checking_exit_code(int status); // check the exit code of the process
+//Redirecting
+bool is_redirected(char *input);
+void redirecting(char *input_file, char *output_file); // redirect input and output files
 
 // signal handler functions
 void handle_sigint();

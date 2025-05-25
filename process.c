@@ -12,6 +12,7 @@
 
 
 pid_t foreground_pid = -1; // Global variable to store the foreground process ID
+int saved_stdout = -1; // Global variable to store the original stdout file descriptor
 
 void redirecting(char *input_file, char *output_file) { // Redirect input and output files
     if (input_file != NULL) { 
@@ -24,6 +25,7 @@ void redirecting(char *input_file, char *output_file) { // Redirect input and ou
         close(file);
     }
     if (output_file != NULL) {
+        saved_stdout = dup(STDOUT_FILENO); // Save the original stdout file descriptor
         int file = open(output_file, O_WRONLY | O_CREAT, 0777); // Redirect output file, write only or create if not exist
         if (file < 0) {
             perror("Error opening output file");

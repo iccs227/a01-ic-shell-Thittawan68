@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
+#include <unistd.h>
+#include <fcntl.h>
 #include "icsh.h"
 #include "jobs_manager.h"
 
@@ -33,6 +34,11 @@ int normal_mode(char *input) {
         }
         
         if (command_factory(input)) {  //Normal input then do normal mode
+            if (saved_stdout != -1) {
+                dup2(saved_stdout, STDOUT_FILENO);
+                close(saved_stdout);
+                saved_stdout = -1;
+            }
             if (job_is_done()) { // Check if any background jobs are done
                 print_done_jobs(); 
             }            
@@ -107,6 +113,14 @@ int chain_mode(char *input) {
     parse_input_for_chain(for_parse_chain_command, args); // Parse the input string into arguments
 
     for (int i = 0; args[i] != NULL; i++) {
+        if (saved_stdout != -1) {
+                dup2(saved_stdout, STDOUT_FILENO);
+                close(saved_stdout);
+                saved_stdout = -1;
+            }
+            if (job_is_done()) { // Check if any background jobs are done
+                print_done_jobs(); 
+            } 
         if (command_factory(args[i]) == 0) { // Execute each command in the chain
             break;
         }

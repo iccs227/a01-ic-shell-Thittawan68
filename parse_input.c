@@ -54,3 +54,30 @@ void parse_double_bash(char *new_chain_command) {
     strcat(replaced_command, pos + 2); // Append the part after "!!"
     strcpy(new_chain_command, replaced_command); // Update temp_chain_command
 }
+
+
+void get_command_before_redirection(const char *input, char *command, char **input_file, char **output_file) {
+    *input_file = NULL;
+    *output_file = NULL;
+
+    char *right = strchr(input, '>');
+    char *left = strchr(input, '<');
+
+    if (right != NULL) {
+        *right = '\0'; // Split the string at the '>' character
+        *output_file = strtok(right + 1, " \t\n"); // Get the output file name
+    }
+    if (left != NULL) {
+        *left = '\0'; // Split the string at the '<' character
+        *input_file = strtok(left + 1, " \t\n"); // Get the input file name
+    }
+
+    const char *redir = strpbrk(input, "><");
+    if (redir) {
+        size_t len = redir - input;
+        strncpy(command, input, len);
+        command[len] = '\0';
+    } else {
+        strcpy(command, input);
+    }
+}

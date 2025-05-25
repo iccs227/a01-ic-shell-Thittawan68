@@ -31,10 +31,19 @@ int command_factory(char *input) {
 
     if (strstr(input, ";") != NULL){
         return chain_mode(input); 
+    } 
+    if (is_redirected(input)) { // Check if the command contains redirection operators
+        char argss[MAX_LINE];
+        char *input_file[MAX_LINE];
+        char *output_file[MAX_LINE];
+        get_command_before_redirection(input, argss, input_file, output_file);
+        redirecting(*input_file, *output_file); 
+        return command_factory(argss); // Handle redirection
+    } 
+    if (strstr(input, "!!") != NULL){        
+        return view(input);
     } else if (is_redirected(input)) {
         return new_process(input); // Handle redirection
-    }   else if (strstr(input, "!!") != NULL){
-        return view(input);
     } else if (strncmp(input, "echo ", 5) == 0) {
         return echo(input);
     } else if (strncmp(input, "exit", 4) == 0) {

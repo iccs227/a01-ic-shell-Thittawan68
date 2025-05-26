@@ -87,7 +87,6 @@ int background_process(char *input) { // Create a new process to execute the com
     char *input_file[MAX_LINE];
     char *output_file[MAX_LINE];
 
-    printf("Background process: %s\n", input); // Print the background process command
     char *original_command = strcpy(malloc(strlen(input) + 2), input); 
     original_command[strlen(original_command)] = '&';
     original_command[strlen(original_command) + 1] = '\0'; // Append '&' to the command
@@ -95,7 +94,7 @@ int background_process(char *input) { // Create a new process to execute the com
     parse_input(input, args, input_file, output_file); // Parse the input string into arguments
     int pid = fork();
     if (pid == 0) { // Child process
-        redirecting(*input_file, *output_file); // Redirect input and output files if needed
+        //redirecting(*input_file, *output_file); // Redirect input and output files if needed
         // set the process group ID to the child process ID -> this way the background process will get affected by the signals
         setpgid(0, 0); 
         execvp(args[0], args);

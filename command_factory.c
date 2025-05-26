@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include "icsh.h"
 #include "jobs_manager.h"
@@ -15,6 +16,11 @@ bool is_redirected(char *input) {
 bool is_background_process(char *input) { // Check if the command should run in the background
     char *ampersand = strchr(input, '&');
     if (ampersand != NULL) {
+        char argss[MAX_LINE];
+        char *input_file[MAX_LINE];
+        char *output_file[MAX_LINE];
+        get_command_before_redirection(input, argss, input_file, output_file);
+        redirecting(*input_file, *output_file); 
         *ampersand = '\0'; // Remove the '&' character from the input string
         return 1; // Background process
     }
@@ -27,6 +33,16 @@ int handle_builtin_with_redirection(char *input) {
     get_command_before_redirection(input, argss, input_file, output_file);
     redirecting(*input_file, *output_file); 
     int result = command_factory(argss); // Handle redirection for built-ins
+    if (saved_stdout != -1) {
+        dup2(saved_stdout, STDOUT_FILENO);
+        close(saved_stdout);
+        saved_stdout = -1;
+    }
+    if (saved_stdin != -1) {
+        dup2(saved_stdin, STDIN_FILENO);
+        close(saved_stdin);
+        saved_stdin = -1;
+    }
     return result;
 }
 /*

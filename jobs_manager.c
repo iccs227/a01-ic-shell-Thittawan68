@@ -446,7 +446,7 @@ void print_exit_jobs(){
         delete_first(); // Remove the first node from the list
         char buffer[64];
         int len;
-        len = snprintf(buffer, sizeof(buffer), "\n[%d] Exit 127    %s\n", size, last_command); // Format the output
+        len = snprintf(buffer, sizeof(buffer), "\n[%d] Exit    %s\n", size, last_command); // Format the output
         write(STDOUT_FILENO, buffer, len);
     }
     background_exit_printed = 0; // Reset the flag after printing

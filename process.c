@@ -13,9 +13,10 @@
 
 pid_t foreground_pid = -1; // Global variable to store the foreground process ID
 int saved_stdout = -1; // Global variable to store the original stdout file descriptor
-
+int saved_stdin = -1; // Global variable to store the original stdin file descriptor
 void redirecting(char *input_file, char *output_file) { // Redirect input and output files
     if (input_file != NULL) { 
+        saved_stdin = dup(STDIN_FILENO); // Save the original stdout file descriptor
         int file = open(input_file, O_RDONLY); // Redirect input, read only
         if (file < 0) {
             perror("Error opening input file");
@@ -86,13 +87,12 @@ int background_process(char *input) { // Create a new process to execute the com
     char *input_file[MAX_LINE];
     char *output_file[MAX_LINE];
 
-
+    printf("Background process: %s\n", input); // Print the background process command
     char *original_command = strcpy(malloc(strlen(input) + 2), input); 
     original_command[strlen(original_command)] = '&';
     original_command[strlen(original_command) + 1] = '\0'; // Append '&' to the command
     strcpy(last_command, original_command); // Store the last command
     parse_input(input, args, input_file, output_file); // Parse the input string into arguments
-
     int pid = fork();
     if (pid == 0) { // Child process
         redirecting(*input_file, *output_file); // Redirect input and output files if needed

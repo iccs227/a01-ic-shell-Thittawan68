@@ -83,12 +83,18 @@ int script_mode(char *input) {
                 close(saved_stdout);
                 saved_stdout = -1;
             }
+            if (saved_stdin != -1) {
+                dup2(saved_stdin, STDIN_FILENO);
+                close(saved_stdin);
+                saved_stdin = -1;
+            }
             if (job_is_done()) { 
                 print_done_jobs(); 
             }
             continue;
         }
     }
+    normal_mode(input); // After processing all commands, return to normal mode
     return 0;
 }
 

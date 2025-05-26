@@ -33,13 +33,13 @@ int view(char *input) {
     if (strlen(last_command) == 0) {
         return 1;
     }
-    char *argss[MAX_LINE];
-    char *input_file[MAX_LINE];
-    char *output_file[MAX_LINE];
-    if (is_redirected(input)) { // Check if the command has redirection
-        parse_input(input, argss, input_file, output_file);
-        redirecting(*input_file, *output_file);
-    } 
+    // char *argss[MAX_LINE];
+    // char *input_file[MAX_LINE];
+    // char *output_file[MAX_LINE];
+    // if (is_redirected(input)) { // Check if the command has redirection
+    //     parse_input(input, argss, input_file, output_file);
+    //     redirecting(*input_file, *output_file);
+    // } 
 
     char result[MAX_LINE] = ""; // Buffer to store the final string
     char *pos = strstr(input, "!!"); // Find the position of "!!"

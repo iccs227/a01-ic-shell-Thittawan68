@@ -13,6 +13,7 @@ extern int background_exit_printed; // Global variable to indicate if there is s
 extern int in_chain; // Global variable to indicate if the command is in a chain
 extern char command_before_chain_command[MAX_LINE]; // Global variable to store command before chain command
 extern int saved_stdout; // Global variable to store the original stdout file descriptor
+extern int saved_stdin; // Global variable to store the original stdin file descriptor
 
 // parse_input function
 void parse_input(char *input, char **args, char **input_file, char **output_file);

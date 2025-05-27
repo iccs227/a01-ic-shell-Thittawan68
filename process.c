@@ -56,14 +56,18 @@ int new_process(char *input) { // Create a new process to execute the command
     char *input_file[MAX_LINE];
     char *output_file[MAX_LINE];
 
-    strcpy(last_command, input); // Store the last command
-
-    parse_input(input, args, input_file, output_file); // Parse the input string into arguments  
-    if (input_file[0] == NULL && output_file[0] == NULL) {
+    strcpy(last_command, input); // Store the last command 
+    if (is_redirected(input)) { // Check if the command contains redirection operators
+        parse_input(input, args, input_file, output_file); // Parse the input string into arguments 
+        if (input_file[0] == NULL && output_file[0] == NULL) {
         // If there is no redirection, just execute the command
         printf("Executing command without redirection: %s\n", *args);
         return 1;
+        }
+    } else{
+        parse_input(input, args, input_file, output_file); // Parse the input string into arguments 
     }
+
     int pid = fork();
     if (pid == 0) { // Child process
         redirecting(*input_file, *output_file); // Redirect input and output files if needed
@@ -96,16 +100,17 @@ int background_process(char *input) { // Create a new process to execute the com
     original_command[strlen(original_command) + 1] = '\0'; // Append '&' to the command
     strcpy(last_command, original_command); // Store the last command
     parse_input(input, args, input_file, output_file); // Parse the input string into arguments
-    if (input_file[0] == NULL && output_file[0] == NULL) {
-        // If there is no redirection, just execute the command
-        printf("Executing command without redirection: %s\n", *args);
-        return 1;
-    }
+    if (is_redirected(input)) { // Check if the command contains redirection operators
+        if (input_file[0] == NULL && output_file[0] == NULL) {
+            // If there is no redirection, just execute the command
+            printf("Executing command without redirection: %s\n", *args);
+            return 1;
+        }
+    }  
     int pid = fork();
     if (pid == 0) { // Child process
-        //redirecting(*input_file, *output_file); // Redirect input and output files if needed
-        // set the process group ID to the child process ID -> this way the background process will get affected by the signals
         setpgid(0, 0); 
+        redirecting(*input_file, *output_file); // Redirect input and output files if needed
         execvp(args[0], args);
         perror("Invalid command");
         exit(EXIT_FAILURE);

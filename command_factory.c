@@ -16,16 +16,6 @@ bool is_redirected(char *input) {
 bool is_background_process(char *input) { // Check if the command should run in the background
     char *ampersand = strchr(input, '&');
     if (ampersand != NULL) {
-        char argss[MAX_LINE];
-        char *input_file[MAX_LINE];
-        char *output_file[MAX_LINE];
-        get_command_before_redirection(input, argss, input_file, output_file);
-        if (input_file[0] != NULL || output_file[0] != NULL) {
-            printf("Executing command without redirection: %s\n", argss);
-            return 1;
-        }        
-        redirecting(*input_file, *output_file); 
-        *ampersand = '\0'; // Remove the '&' character from the input string
         return 1; // Background process
     }
     return 0; // Foreground process
@@ -66,7 +56,9 @@ int command_factory(char *input) {
         return chain_mode(input); 
     } 
     if (is_background_process(input)) { // Check if the command should run in the background 
-            return background_process(input);
+        char *ampersand = strchr(input, '&');
+        *ampersand = '\0'; // Remove the '&' character from the input string
+        return background_process(input);
     }
     if (strstr(input, "!!") != NULL){    
         if (is_redirected(input)) { // Check if the command contains redirection operators

@@ -20,6 +20,10 @@ bool is_background_process(char *input) { // Check if the command should run in 
         char *input_file[MAX_LINE];
         char *output_file[MAX_LINE];
         get_command_before_redirection(input, argss, input_file, output_file);
+        if (input_file[0] != NULL || output_file[0] != NULL) {
+            printf("Executing command without redirection: %s\n", argss);
+            return 1;
+        }        
         redirecting(*input_file, *output_file); 
         *ampersand = '\0'; // Remove the '&' character from the input string
         return 1; // Background process
@@ -31,6 +35,11 @@ int handle_builtin_with_redirection(char *input) {
     char *input_file[MAX_LINE];
     char *output_file[MAX_LINE];
     get_command_before_redirection(input, argss, input_file, output_file);
+    if (input_file[0] == NULL && output_file[0] == NULL) {
+        // If there is no redirection, just execute the command
+        printf("Executing command without redirection: %s\n", argss);
+        return 1;
+    }    
     redirecting(*input_file, *output_file); 
     int result = command_factory(argss); // Handle redirection for built-ins
     if (saved_stdout != -1) {

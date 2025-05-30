@@ -306,7 +306,7 @@ int continue_background(char *input) {
         }
         current = current->next;
     } while (current != head);
-    printf("fg: %%%d: no such job\n", id); // Job not found
+    printf("bg: %%%d: no such job\n", id); // Job not found
 
     return 1;
 }
